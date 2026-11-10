@@ -18,7 +18,12 @@ public class DataSeeder implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         if (userRepository.count() == 0) {
-            String adminPass = System.getenv().getOrDefault("ADMIN_PASSWORD", "admin123");
+            String adminPass = System.getenv("ADMIN_PASSWORD");
+
+            if (adminPass == null || adminPass.length() < 8) {
+                System.out.println("No admin created. Set ADMIN_PASSWORD (at least 8 characters).");
+                return;
+            }
 
             User admin = new User();
             admin.setUsername("admin");
@@ -26,8 +31,8 @@ public class DataSeeder implements CommandLineRunner {
             admin.setPassword(passwordEncoder.encode(adminPass));
             admin.setRole("ADMIN");
             userRepository.save(admin);
-            
-            System.out.println("✅ Default Admin created. Password is: " + adminPass);
+
+            System.out.println("Default admin created.");
         }
     }
 }
