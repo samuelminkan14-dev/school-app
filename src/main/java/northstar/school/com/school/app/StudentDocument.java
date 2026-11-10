@@ -12,7 +12,7 @@ public class StudentDocument {
     private String fileType;
     
     @Lob
-    @Column(columnDefinition = "LONGBLOB")
+    @Column(columnDefinition = "BYTEA")
     private byte[] data;
 
     @ManyToOne
