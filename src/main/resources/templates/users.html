@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head><title>Users</title></head>
+<body>
+    <div layout:fragment="content">
+        <h1>User Management 🔐</h1>
+
+        <div class="form-box" style="border-top: 5px solid #17a2b8;">
+            <h3>Create New System User</h3>
+            <form action="/addUser" method="post" style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; gap: 10px;">
+                <input type="text" name="username" placeholder="Username" required>
+                <input type="password" name="password" placeholder="Password" required>
+                
+                <select name="role" required id="roleSelect">
+                    <option value="">Select Role</option>
+                    <option value="ADMIN">ADMIN</option>
+                    <option value="TEACHER">TEACHER</option>
+                    <option value="PARENT">PARENT</option>
+                </select>
+                
+                <!-- Teacher Dropdown (Only shows when TEACHER is selected) -->
+                <select name="linkedId" id="teacherSelect" style="display: none;">
+                    <option value="">-- Link to Teacher --</option>
+                    <option th:each="t : ${teachers}" th:value="${t.id}" th:text="${t.firstName + ' ' + t.lastName}"></option>
+                </select>
+                
+                <button type="submit" style="width: 100%;">Create User</button>
+            </form>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Role</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="u : ${users}">
+                    <td th:text="${u.id}">1</td>
+                    <td th:text="${u.username}">admin</td>
+                    <td><span style="background: #e9ecef; padding: 5px 10px; border-radius: 20px; font-weight: bold;" th:text="${u.role}">ADMIN</span></td>
+                    <td>
+                        <a th:href="@{/deleteUser/{id}(id=${u.id})}" class="action-link delete" onclick="return confirm('Delete this user?');">Delete</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Show the Teacher dropdown only when "TEACHER" is selected
+        document.getElementById('roleSelect').addEventListener('change', function() {
+            const teacherSelect = document.getElementById('teacherSelect');
+            if (this.value === 'TEACHER') {
+                teacherSelect.style.display = 'block';
+            } else {
+                teacherSelect.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

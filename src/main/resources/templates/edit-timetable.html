@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head><title>Edit Timetable</title></head>
+<body>
+    <div layout:fragment="content">
+        <h1>Update Schedule Entry ✏️</h1>
+
+        <div class="form-box" style="border-top: 5px solid #3b82f6; max-width: 600px;">
+            <form action="/updateTimetable" method="post">
+                <input type="hidden" name="id" th:value="${timetable.id}">
+                
+                <label style="font-weight: bold;">Class:</label>
+                <input type="text" name="className" th:value="${timetable.classroom.className}" required>
+
+                <label style="font-weight: bold;">Subject:</label>
+                <input type="text" name="subjectName" th:value="${timetable.subject.subjectName}" required>
+
+                <label style="font-weight: bold;">Teacher:</label>
+                <select name="teacherId" required>
+                    <option th:each="t : ${teachers}" 
+                            th:value="${t.id}" 
+                            th:text="${t.firstName + ' ' + t.lastName}"
+                            th:selected="${t.id == timetable.teacher.id}">
+                    </option>
+                </select>
+
+                <label style="font-weight: bold;">Day:</label>
+                <select name="dayOfWeek" required>
+                    <option value="Monday" th:selected="${timetable.dayOfWeek == 'Monday'}">Monday</option>
+                    <option value="Tuesday" th:selected="${timetable.dayOfWeek == 'Tuesday'}">Tuesday</option>
+                    <option value="Wednesday" th:selected="${timetable.dayOfWeek == 'Wednesday'}">Wednesday</option>
+                    <option value="Thursday" th:selected="${timetable.dayOfWeek == 'Thursday'}">Thursday</option>
+                    <option value="Friday" th:selected="${timetable.dayOfWeek == 'Friday'}">Friday</option>
+                </select>
+
+                <label style="font-weight: bold;">Time Slot:</label>
+                <input type="text" name="timeSlot" th:value="${timetable.timeSlot}" required>
+
+                <button type="submit" style="background: #3b82f6; width: 100%; margin-top: 15px;">Save Changes</button>
+                <a href="/timetable" style="display: block; text-align: center; margin-top: 10px; color: #64748b; text-decoration: none;">Cancel</a>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

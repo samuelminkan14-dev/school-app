@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head><title>Audit Logs</title></head>
+<body>
+    <div layout:fragment="content">
+        <h1>System Audit Logs 🔍</h1>
+        <p style="color: #64748b;">A record of all critical actions taken by users in the system.</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Date & Time</th>
+                    <th>User</th>
+                    <th>Action</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="l : ${logs}">
+                    <td th:text="${#temporals.format(l.timestamp, 'yyyy-MM-dd HH:mm')}">2026-11-10 10:00</td>
+                    <td style="font-weight: bold; color: #3b82f6;" th:text="${l.username}">admin</td>
+                    <td>
+                        <span th:if="${l.action == 'DELETE'}" style="background: #fee2e2; color: #991b1b; padding: 5px 10px; border-radius: 20px; font-weight: bold; font-size: 12px;">DELETE</span>
+                        <span th:if="${l.action == 'CREATE'}" style="background: #d1fae5; color: #065f46; padding: 5px 10px; border-radius: 20px; font-weight: bold; font-size: 12px;">CREATE</span>
+                        <span th:if="${l.action == 'UPDATE'}" style="background: #fef3c7; color: #92400e; padding: 5px 10px; border-radius: 20px; font-weight: bold; font-size: 12px;">UPDATE</span>
+                    </td>
+                    <td th:text="${l.details}">Deleted Student John Doe</td>
+                </tr>
+                <tr th:if="${logs == null || logs.empty}">
+                    <td colspan="4" style="text-align: center; padding: 20px;">No logs recorded yet.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

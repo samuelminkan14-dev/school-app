@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head><title>Gradebook</title></head>
+<body>
+    <div layout:fragment="content">
+        <h1>Class Gradebook 📊</h1>
+
+        <div class="form-box" style="border-top: 5px solid #17a2b8;">
+            <h3>Select an Exam to View Grades</h3>
+            <form action="/gradebook" method="get">
+                <select name="examId" required>
+                    <option value="">-- Select Exam --</option>
+                    <option th:each="e : ${exams}" th:value="${e.id}" th:text="${e.examName}"></option>
+                </select>
+                <button type="submit" style="background: #17a2b8;">View Gradebook</button>
+            </form>
+        </div>
+
+        <div th:if="${selectedExam != null}">
+            <h2>Results for: <span th:text="${selectedExam.examName}" style="color: #17a2b8;"></span></h2>
+            <table>
+                <thead>
+                    <tr><th>Student Name</th><th>Class</th><th>Score</th></tr>
+                </thead>
+                <tbody>
+                    <tr th:each="m : ${examMarks}">
+                        <td th:text="${m.student.firstName + ' ' + m.student.lastName}">John Doe</td>
+                        <td th:text="${m.student.classroom != null ? m.student.classroom.className : 'No Class'}">Grade 5A</td>
+                        <td><span style="background: #e9ecef; padding: 5px 10px; border-radius: 20px; font-weight: bold;" th:text="${m.score} + ' / 100'">85</span></td>
+                    </tr>
+                    <tr th:if="${examMarks == null || examMarks.empty}">
+                        <td colspan="3" style="text-align: center; padding: 20px;">No marks entered for this exam yet.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

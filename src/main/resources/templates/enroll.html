@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head>
+    <title>Enroll Student</title>
+    <style>
+        .form-grid { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin-bottom: 30px; border-top: 5px solid #28a745; }
+        .columns-container { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 20px; }
+        .form-section h3 { margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 10px; color: #333; }
+        .form-section label { display: block; margin-top: 10px; font-weight: bold; font-size: 14px; }
+        .form-section input { margin-bottom: 15px; width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        .submit-btn { width: 100%; background: #28a745; padding: 15px; font-size: 18px; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .submit-btn:hover { background: #218838; }
+    </style>
+</head>
+<body>
+    <div layout:fragment="content">
+        <h1>Enroll New Student ➕</h1>
+
+        <div style="margin-bottom: 20px;">
+            <a href="/" style="color: #64748b; text-decoration: none; font-weight: bold;">⬅ Back to Directory</a>
+        </div>
+
+        <!-- ADDED enctype="multipart/form-data" -->
+        <form action="/addStudent" method="post" enctype="multipart/form-data">
+            <div class="form-grid">
+                <div class="columns-container">
+                    <div class="form-section">
+                        <h3>👨‍🎓 Student Details</h3>
+                        <label>First Name</label>
+                        <input type="text" name="firstName" placeholder="First Name" required>
+                        <label>Last Name</label>
+                        <input type="text" name="lastName" placeholder="Last Name" required>
+                        
+                        <!-- NEW: PROFILE PICTURE UPLOAD -->
+                        <label>Profile Picture</label>
+                        <input type="file" name="profilePic" accept="image/*">
+                        
+                        <label>Class (Select or Type)</label>
+                        <input type="text" name="className" id="classInput" list="class-list" placeholder="e.g. Basic 1 or SHS 2" required autocomplete="off">
+                        <datalist id="class-list">
+                            <optgroup label="Primary School">
+                                <option value="Basic 1"></option><option value="Basic 2"></option><option value="Basic 3"></option>
+                                <option value="Basic 4"></option><option value="Basic 5"></option><option value="Basic 6"></option>
+                            </optgroup>
+                            <optgroup label="Junior High School">
+                                <option value="JHS 1"></option><option value="JHS 2"></option><option value="JHS 3"></option>
+                            </optgroup>
+                            <optgroup label="Senior High School">
+                                <option value="SHS 1"></option><option value="SHS 2"></option><option value="SHS 3"></option>
+                            </optgroup>
+                            <option th:each="c : ${classrooms}" th:value="${c.className}"></option>
+                        </datalist>
+                    </div>
+                    <div class="form-section">
+                        <h3>👨‍👩‍👧 Parent / Guardian Details</h3>
+                        <label>Parent Full Name</label>
+                        <input type="text" name="guardianName" placeholder="Parent Full Name" required>
+                        <label>Parent Phone Number</label>
+                        <input type="text" name="guardianPhone" placeholder="Phone Number" required>
+                        <label>Location / Area</label>
+                        <input type="text" name="guardianLocation" placeholder="Area (e.g. East Legon)" required>
+                    </div>
+                </div>
+                <button type="submit" class="submit-btn">Enroll Student & Generate ID</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

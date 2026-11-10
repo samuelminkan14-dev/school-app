@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head><title>Attendance</title></head>
+<body>
+    <div layout:fragment="content">
+        <h1>Mark Attendance 📝</h1>
+        <h3>Date: <span th:text="${today}" style="color: #3b82f6;"></span></h3>
+
+        <div th:if="${param.success}" style="background: #d4edda; color: #155724; padding: 15px; border-radius: 5px; margin-bottom: 20px; border-left: 5px solid #28a745;">
+            <strong>✅ Success!</strong> Attendance saved. Parents of absent students have been notified via SMS.
+        </div>
+
+        <table>
+            <thead>
+                <tr><th>ID</th><th>Student Name</th><th>Class</th><th>Status Action</th></tr>
+            </thead>
+            <tbody>
+                <tr th:each="student : ${students}">
+                    <td th:text="${student.id}">1</td>
+                    <td th:text="${student.firstName + ' ' + student.lastName}">John Doe</td>
+                    <td th:text="${student.classroom != null ? student.classroom.className : 'No Class'}">Grade 5A</td>
+                    <td>
+                        <form action="/saveAttendance" method="post" style="display:flex; gap: 10px; margin: 0;">
+                            <input type="hidden" name="studentId" th:value="${student.id}">
+                            <select name="status" style="width: 120px; margin: 0;">
+                                <option value="Present">Present</option>
+                                <option value="Absent">Absent</option>
+                                <option value="Late">Late</option>
+                            </select>
+                            <button type="submit" style="background: #4CAF50; margin: 0; padding: 5px 15px;">Save</button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${students == null || students.empty}">
+                    <td colspan="4" style="text-align: center; padding: 20px;">No students found. Add students first!</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

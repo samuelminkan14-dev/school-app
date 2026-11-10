@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head><title>Edit Teacher</title></head>
+<body>
+    <div layout:fragment="content">
+        <h2>Edit Teacher</h2>
+        <div class="form-box" style="width: 300px;">
+            <form action="/updateTeacher" method="post">
+                <input type="hidden" name="id" th:value="${teacher.id}">
+                
+                <label>First Name:</label>
+                <input type="text" name="firstName" th:value="${teacher.firstName}" required>
+                
+                <label>Last Name:</label>
+                <input type="text" name="lastName" th:value="${teacher.lastName}" required>
+                
+                <label>Subject:</label>
+                <input type="text" name="subject" th:value="${teacher.subject}" required>
+                
+                <button type="submit" style="width: 100%; margin-top: 10px;">Update Teacher</button>
+                <a href="/teachers" style="display:block; margin-top:10px; text-align:center; color: #888; text-decoration: none;">Cancel</a>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

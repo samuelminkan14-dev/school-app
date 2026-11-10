@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout-teacher}">
+<head><title>Enter Marks</title></head>
+<body>
+    <div layout:fragment="content">
+        <h1>Enter Student Marks: <span th:text="${classroom.className}" style="color: #3b82f6;"></span></h1>
+        <table>
+            <thead>
+                <tr><th>Student Name</th><th>Exam</th><th>Subject</th><th>Score</th><th>Action</th></tr>
+            </thead>
+            <tbody>
+                <tr th:each="student : ${students}">
+                    <td style="font-weight: bold;" th:text="${student.firstName + ' ' + student.lastName}">John Doe</td>
+                    <td colspan="4">
+                        <form action="/teacher/saveMark" method="post" style="display: flex; gap: 10px; margin: 0;">
+                            <input type="hidden" name="studentId" th:value="${student.id}">
+                            <input type="hidden" name="classId" th:value="${classroom.id}">
+                            
+                            <select name="examId" required style="flex: 1; margin: 0;">
+                                <option value="">Select Exam</option>
+                                <option th:each="e : ${exams}" th:value="${e.id}" th:text="${e.examName}"></option>
+                            </select>
+                            
+                            <select name="subjectId" required style="flex: 1; margin: 0;">
+                                <option value="">Select Subject</option>
+                                <option th:each="s : ${subjects}" th:value="${s.id}" th:text="${s.subjectName}"></option>
+                            </select>
+                            
+                            <input type="number" step="0.1" name="score" placeholder="Score" required style="width: 100px; margin: 0;">
+                            
+                            <button type="submit" style="width: auto; background: #3b82f6;">Save</button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${students == null || students.empty}">
+                    <td colspan="5" style="text-align: center; padding: 20px;">No students in this class.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head><title>Finance</title></head>
+<body>
+    <div layout:fragment="content">
+        <h1>Finance & Fees 💰</h1>
+
+        <div th:if="${successMessage}" style="background: #d4edda; color: #155724; padding: 15px; border-radius: 5px; margin-bottom: 20px; border-left: 5px solid #28a745;">
+            <strong>✅ Success!</strong> <span th:text="${successMessage}"></span>
+        </div>
+
+        <div class="dashboard-cards" style="display: flex; gap: 20px; margin-bottom: 30px;">
+            <!-- Create Fee Form -->
+            <div class="form-box" style="flex: 1; border-top: 5px solid #007bff; margin-bottom: 0;">
+                <h3>Create Fee Structure</h3>
+                <form action="/createFee" method="post">
+                    <input type="text" name="feeName" placeholder="Fee Name (e.g. Term 1 Tuition)" required>
+                    <input type="number" step="0.01" name="amount" placeholder="Amount" required>
+                    <select name="classroomId" required>
+                        <option value="">-- Select Class --</option>
+                        <option th:each="c : ${classrooms}" th:value="${c.id}" th:text="${c.className}"></option>
+                    </select>
+                    <button type="submit" style="width: 100%; background: #007bff;">Create Fee</button>
+                </form>
+            </div>
+
+            <!-- Record Payment Form -->
+            <div class="form-box" style="flex: 1; border-top: 5px solid #4CAF50; margin-bottom: 0;">
+                <h3>Record Payment</h3>
+                <form action="/recordPayment" method="post">
+                    <select name="studentId" required>
+                        <option value="">-- Select Student --</option>
+                        <option th:each="s : ${students}" th:value="${s.id}" th:text="${s.firstName + ' ' + s.lastName}"></option>
+                    </select>
+                    <select name="feeId" required>
+                        <option value="">-- Select Fee --</option>
+                        <option th:each="f : ${fees}" th:value="${f.id}" th:text="${f.feeName + ' (' + ${globalSettings.currency} + f.amount + ')'}"></option>
+                    </select>
+                    <input type="number" step="0.01" name="amountPaid" placeholder="Amount Paid" required>
+                    
+                    <!-- Payment Method Dropdown -->
+                    <select name="method" required>
+                        <option value="Mobile Money">Mobile Money</option>
+                        <option value="Bank Transfer">Bank Transfer</option>
+                        <option value="Cash">Cash</option>
+                        <option value="Cheque">Cheque</option>
+                    </select>
+                    
+                    <button type="submit" style="background: #4CAF50; width: 100%; margin-top: 10px;">Pay & Generate Receipt</button>
+                </form>
+            </div>
+        </div>
+
+        <h2>Payment History</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Student</th>
+                    <th>Fee Type</th>
+                    <th>Method</th>
+                    <th>Amount Paid</th>
+                    <th>Receipt</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="p : ${payments}">
+                    <td th:text="${p.paymentDate}">2026-11-08</td>
+                    <td th:text="${p.student.firstName + ' ' + p.student.lastName}">John Doe</td>
+                    <td th:text="${p.fee.feeName}">Term 1 Tuition</td>
+                    <td th:text="${p.method}">Cash</td>
+                    <td style="color: #28a745; font-weight: bold;" th:text="${globalSettings.currency} + ' ' + ${p.amountPaid}">GHS 500.00</td>
+                    <td>
+                        <a th:href="@{/receipt/{id}(id=${p.id})}" style="color: #007bff; font-weight: bold; text-decoration: none;">View Receipt</a>
+                    </td>
+                </tr>
+                <tr th:if="${payments == null || payments.empty}">
+                    <td colspan="6" style="text-align: center; padding: 20px;">No payments recorded yet.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

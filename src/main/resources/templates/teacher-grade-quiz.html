@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout-teacher}">
+<head><title>Grade Quiz</title></head>
+<body>
+    <div layout:fragment="content">
+        <div class="card" style="border-left: 5px solid #8b5cf6;">
+            <h2 style="margin: 0; color: #333;" th:text="${quiz.title}">Quiz Title</h2>
+            <p style="margin: 5px 0 0 0; color: #666;">
+                <strong>Type:</strong> <span th:text="${quiz.assessmentType}"></span> | 
+                <strong>Total Marks:</strong> <span th:text="${quiz.maxScore}"></span> |
+                <strong>Class:</strong> <span th:text="${quiz.classroom.className}"></span>
+            </p>
+        </div>
+
+        <table>
+            <thead>
+                <tr><th>Student Name</th><th>Score (Out of <span th:text="${quiz.maxScore}"></span>)</th></tr>
+            </thead>
+            <tbody>
+                <tr th:each="student : ${students}">
+                    <td style="font-weight: bold;" th:text="${student.firstName + ' ' + student.lastName}">John Doe</td>
+                    <td>
+                        <form action="/teacher/saveQuizGrade" method="post" style="display: flex; gap: 10px; margin: 0;">
+                            <input type="hidden" name="quizId" th:value="${quiz.id}">
+                            <input type="hidden" name="studentId" th:value="${student.id}">
+                            <input type="number" step="0.1" name="score" placeholder="Score" required style="width: 150px; margin: 0;">
+                            <button type="submit" style="width: auto; background: #8b5cf6;">Save</button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${students == null || students.empty}">
+                    <td colspan="2" style="text-align: center; padding: 20px;">No students in this class.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

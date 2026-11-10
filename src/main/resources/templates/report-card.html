@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head>
+    <title>Report Card - <span th:text="${student.firstName}"></span></title>
+    <style>
+        /* --- SCREEN STYLES --- */
+        .report-card-wrapper { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); max-width: 800px; margin: 0 auto; }
+        
+        .school-header { text-align: center; border-bottom: 3px double #333; padding-bottom: 20px; margin-bottom: 30px; }
+        .school-header h1 { margin: 0; color: #1e293b; font-size: 28px; text-transform: uppercase; letter-spacing: 2px; }
+        .school-header p { margin: 5px 0 0 0; color: #64748b; font-size: 14px; }
+        .school-header h2 { margin: 15px 0 0 0; color: #3b82f6; font-size: 20px; }
+
+        .student-info { display: flex; justify-content: space-between; margin-bottom: 30px; font-size: 16px; background: #f8fafc; padding: 15px; border-radius: 8px; }
+        .student-info div { margin-bottom: 5px; }
+
+        table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+        th, td { border: 1px solid #cbd5e1; padding: 12px; text-align: left; }
+        th { background-color: #1e293b; color: white; text-transform: uppercase; font-size: 13px; letter-spacing: 1px; }
+        
+        .grade-A { color: #10b981; font-weight: bold; }
+        .grade-B { color: #3b82f6; font-weight: bold; }
+        .grade-C { color: #f59e0b; font-weight: bold; }
+        .grade-D { color: #f97316; font-weight: bold; }
+        .grade-F { color: #ef4444; font-weight: bold; }
+
+        .summary-section { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 40px; }
+        .comments { width: 60%; }
+        .comments h4 { margin: 0 0 10px 0; color: #1e293b; }
+        .comments p { border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-bottom: 15px; color: #475569; }
+        
+        .final-score { text-align: center; background: #f8fafc; padding: 20px; border-radius: 8px; border: 2px solid #3b82f6; width: 30%; }
+        .final-score h3 { margin: 0; color: #64748b; font-size: 14px; text-transform: uppercase; }
+        .final-score h1 { margin: 10px 0; color: #3b82f6; font-size: 40px; }
+        
+        .signatures { display: flex; justify-content: space-between; margin-top: 60px; border-top: 1px dashed #ccc; padding-top: 20px; }
+        .signatures div { text-align: center; width: 30%; }
+        .signatures .line { border-bottom: 1px solid #333; height: 30px; margin-bottom: 5px; }
+        .signatures p { margin: 0; font-size: 12px; color: #64748b; text-transform: uppercase; }
+
+        /* --- PRINT STYLES (HIDES SIDEBAR) --- */
+        @media print {
+            /* Hide the sidebar, hamburger, and logout button */
+            .sidebar, .hamburger, .top-logout, .floating-back, .no-print { display: none !important; }
+            
+            /* Reset the main content to take full page */
+            .main-content { margin-left: 0 !important; width: 100% !important; padding: 0 !important; }
+            
+            /* Remove shadows and borders for clean printing */
+            .report-card-wrapper { box-shadow: none; padding: 0; max-width: 100%; }
+            
+            /* Ensure background colors print */
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+        }
+    </style>
+</head>
+<body>
+    <div layout:fragment="content">
+        
+        <!-- This button disappears when actually printing -->
+        <div class="no-print" style="margin-bottom: 20px; text-align: center;">
+            <button onclick="window.print()" style="padding: 12px 25px; background: #3b82f6; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold;">
+                🖨️ Print / Save as PDF
+            </button>
+            <a href="/" style="margin-left: 10px; padding: 12px 25px; background: #64748b; color: white; text-decoration: none; border-radius: 5px; font-size: 16px; font-weight: bold;">Back</a>
+        </div>
+
+        <div class="report-card-wrapper">
+            <!-- School Header -->
+            <div class="school-header">
+                <h1 th:text="${globalSettings != null ? globalSettings.schoolName : 'School Name'}">School Name</h1>
+                <p th:text="${globalSettings != null ? globalSettings.address : 'School Address'}">Address</p>
+                <h2>OFFICIAL TERMINAL REPORT</h2>
+            </div>
+
+            <!-- Student Info -->
+            <div class="student-info">
+                <div>
+                    <strong>Student Name:</strong> <span th:text="${student.firstName + ' ' + student.lastName}">John Doe</span><br>
+                    <strong>Index Number:</strong> <span th:text="${student.indexNumber}">5250261101</span>
+                </div>
+                <div>
+                    <strong>Class:</strong> <span th:text="${student.classroom != null ? student.classroom.className : 'N/A'}">Basic 1</span><br>
+                    <strong>Date:</strong> <span th:text="${#dates.format(#dates.createNow(), 'dd MMMM yyyy')}">10 November 2026</span>
+                </div>
+            </div>
+
+            <!-- Grades Table -->
+            <table>
+                <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Exam Name</th>
+                        <th>Score</th>
+                        <th>Grade</th>
+                        <th>Remarks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="m : ${marks}">
+                        <td th:text="${m.subject != null ? m.subject.subjectName : 'N/A'}">Math</td>
+                        <td th:text="${m.exam.examName}">Midterm</td>
+                        <td style="font-weight: bold;" th:text="${m.score} + ' / 100'">85</td>
+                        
+                        <td th:if="${m.score >= 80}" class="grade-A">A</td>
+                        <td th:if="${m.score >= 70 and m.score < 80}" class="grade-B">B</td>
+                        <td th:if="${m.score >= 60 and m.score < 70}" class="grade-C">C</td>
+                        <td th:if="${m.score >= 50 and m.score < 60}" class="grade-D">D</td>
+                        <td th:if="${m.score < 50}" class="grade-F">F</td>
+                        
+                        <td>
+                            <span th:if="${m.score >= 80}">Excellent</span>
+                            <span th:if="${m.score >= 70 and m.score < 80}">Very Good</span>
+                            <span th:if="${m.score >= 60 and m.score < 70}">Good</span>
+                            <span th:if="${m.score >= 50 and m.score < 60}">Pass</span>
+                            <span th:if="${m.score < 50}">Needs Improvement</span>
+                        </td>
+                    </tr>
+                    <tr th:if="${marks == null || marks.empty}">
+                        <td colspan="5" style="text-align: center; padding: 20px;">No marks recorded for this student.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Summary and Comments -->
+            <div class="summary-section">
+                <div class="comments">
+                    <h4>Class Teacher's Remarks:</h4>
+                    <p th:if="${average >= 80}">A highly exceptional performance. Keep up the excellent work!</p>
+                    <p th:if="${average >= 70 and average < 80}">A very good result. Continue to strive for excellence.</p>
+                    <p th:if="${average >= 60 and average < 70}">A good performance. There is room for improvement.</p>
+                    <p th:if="${average >= 50 and average < 60}">A fair performance. More effort is required.</p>
+                    <p th:if="${average < 50}">Performance is below expectation. Urgent attention is needed.</p>
+                </div>
+                <div class="final-score">
+                    <h3>Final Average</h3>
+                    <h1 th:text="${average} + '%'">85.0%</h1>
+                    <strong th:if="${average >= 80}" class="grade-A">GRADE A</strong>
+                    <strong th:if="${average >= 70 and average < 80}" class="grade-B">GRADE B</strong>
+                    <strong th:if="${average >= 60 and average < 70}" class="grade-C">GRADE C</strong>
+                    <strong th:if="${average >= 50 and average < 60}" class="grade-D">GRADE D</strong>
+                    <strong th:if="${average < 50}" class="grade-F">GRADE F</strong>
+                </div>
+            </div>
+
+            <!-- Signatures -->
+            <div class="signatures">
+                <div>
+                    <div class="line"></div>
+                    <p>Class Teacher</p>
+                </div>
+                <div>
+                    <div class="line"></div>
+                    <p>Headmaster</p>
+                </div>
+                <div>
+                    <div class="line"></div>
+                    <p>Parent / Guardian</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auto-Trigger Print Dialog when page loads (Optional) -->
+    <script>
+        // Uncomment the line below if you want the print window to open automatically
+        // window.onload = function() { window.print(); }
+    </script>
+</body>
+</html>

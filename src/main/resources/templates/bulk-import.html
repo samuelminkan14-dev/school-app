@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head><title>Bulk Import</title></head>
+<body>
+    <div layout:fragment="content">
+        <h1>Bulk Import Students 📁</h1>
+        
+        <div class="form-box" style="border-top: 5px solid #10b981; max-width: 600px;">
+            <h3>Upload CSV File</h3>
+            <p>Format: <strong>FirstName, LastName, ClassName, GuardianName, GuardianPhone, GuardianLocation</strong></p>
+            
+            <div th:if="${message}" style="background: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
+                <span th:text="${message}"></span>
+            </div>
+
+            <form action="/importStudents" method="post" enctype="multipart/form-data">
+                <input type="file" name="file" accept=".csv" required>
+                <button type="submit" style="background: #10b981; width: 100%; margin-top: 10px;">Import Students</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

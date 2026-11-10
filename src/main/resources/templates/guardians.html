@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head><title>Guardian Directory</title></head>
+<body>
+    <div layout:fragment="content">
+        <h1>Guardian Directory 👨‍👩‍👧</h1>
+
+        <div class="form-box" style="border-top: 5px solid #e83e8c; margin-bottom: 30px;">
+            <h3>Quick Link Parent to Student</h3>
+            <form action="/addGuardian" method="post" style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; gap: 10px;">
+                <input type="text" name="fullName" placeholder="Parent Full Name" required>
+                <input type="text" name="relationship" placeholder="Relationship (e.g. Mother)" required>
+                <input type="text" name="phone" placeholder="Phone Number" required>
+                <select name="studentId" required>
+                    <option value="">-- Select Student --</option>
+                    <option th:each="s : ${students}" th:value="${s.id}" th:text="${s.firstName + ' ' + s.lastName + ' (' + s.indexNumber + ')'}"></option>
+                </select>
+                <button type="submit" style="background: #e83e8c; width: 100%;">Link Parent</button>
+            </form>
+        </div>
+
+        <h2>Manage Parents & Locations</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Student</th>
+                    <th>Parent Name</th>
+                    <th>Phone</th>
+                    <th>Location / Area</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="g : ${guardians}">
+                    <!-- Student Info -->
+                    <td style="font-weight: bold; color: #007bff;" th:text="${g.student.firstName + ' ' + g.student.lastName}">John Doe</td>
+                    
+                    <!-- Inline Update Form -->
+                    <td colspan="3">
+                        <form action="/updateGuardian" method="post" style="display: flex; gap: 10px; margin: 0; align-items: center;">
+                            <input type="hidden" name="id" th:value="${g.id}">
+                            
+                            <input type="text" name="fullName" th:value="${g.fullName}" required style="margin: 0; padding: 8px;" placeholder="Parent Name">
+                            
+                            <input type="text" name="phone" th:value="${g.phone}" required style="margin: 0; padding: 8px;" placeholder="Phone">
+                            
+                            <input type="text" name="location" th:value="${g.location}" required style="margin: 0; padding: 8px;" placeholder="Location">
+                            
+                            <button type="submit" style="background: #007bff; padding: 8px 15px; margin: 0;">Update</button>
+                        </form>
+                    </td>
+                    
+                    <!-- Delete Action -->
+                    <td style="text-align: center;">
+                        <a th:href="@{/deleteGuardian/{id}(id=${g.id})}" class="action-link delete" onclick="return confirm('Delete this guardian?');">Delete</a>
+                    </td>
+                </tr>
+                <tr th:if="${guardians == null || guardians.empty}">
+                    <td colspan="5" style="text-align: center; padding: 20px;">No guardians found.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

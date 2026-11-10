@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head><title>Dashboard</title></head>
+<body>
+    <div layout:fragment="content">
+        <h1>Admin Analytics Dashboard 🏫</h1>
+        <p style="color: #64748b; margin-bottom: 30px;">Welcome back! Here is the overview of your school today.</p>
+
+        <!-- TOP ROW: SCHOOL COUNTS -->
+        <div class="dashboard-cards" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px;">
+            
+            <div style="background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-top: 5px solid #28a745; text-align: center;">
+                <h3 style="margin: 0; color: #64748b; font-size: 14px; text-transform: uppercase;">Total Students</h3>
+                <h1 style="margin: 10px 0 0 0; color: #333; font-size: 48px;" th:text="${totalStudents}">0</h1>
+            </div>
+
+            <div style="background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-top: 5px solid #dc3545; text-align: center;">
+                <h3 style="margin: 0; color: #64748b; font-size: 14px; text-transform: uppercase;">Total Teachers</h3>
+                <h1 style="margin: 10px 0 0 0; color: #333; font-size: 48px;" th:text="${totalTeachers}">0</h1>
+            </div>
+
+            <div style="background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-top: 5px solid #ffc107; text-align: center;">
+                <h3 style="margin: 0; color: #64748b; font-size: 14px; text-transform: uppercase;">Total Classes</h3>
+                <h1 style="margin: 10px 0 0 0; color: #333; font-size: 48px;" th:text="${totalClasses}">0</h1>
+            </div>
+
+        </div>
+
+        <!-- BOTTOM ROW: FINANCE & PERFORMANCE -->
+        <div class="grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            
+            <!-- Finance Card -->
+            <div style="background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                <h3 style="margin-top: 0; color: #333; border-bottom: 2px solid #eee; padding-bottom: 10px;">💰 Fee Collection</h3>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+                    <div>
+                        <h4 style="margin: 0; color: #64748b; font-size: 14px;">Total Collected</h4>
+                        <!-- DYNAMIC CURRENCY HERE -->
+                        <h2 style="margin: 5px 0 0 0; color: #10b981; font-size: 32px;" th:text="${globalSettings.currency} + ' ' + ${totalCollected}">GHS 0.00</h2>
+                    </div>
+                    <a href="/finance" style="background: #10b981; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">View Finance</a>
+                </div>
+            </div>
+
+            <!-- Performance Card -->
+            <div style="background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                <h3 style="margin-top: 0; color: #333; border-bottom: 2px solid #eee; padding-bottom: 10px;">📈 School Performance</h3>
+                <div style="margin-top: 20px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <strong>Attendance Rate</strong>
+                        <span th:text="${attendanceRate} + '%'">0%</span>
+                    </div>
+                    <!-- Progress bar -->
+                    <div style="width: 100%; background: #e2e8f0; border-radius: 10px; height: 10px; overflow: hidden; margin-bottom: 20px;">
+                        <div th:style="'width: ' + ${attendanceRate} + '%; background: #3b82f6; height: 100%;'"></div>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between;">
+                        <strong>Exams Graded</strong>
+                        <span th:text="${totalMarks} + ' Records'">0 Records</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>

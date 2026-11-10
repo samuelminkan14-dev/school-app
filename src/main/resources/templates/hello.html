@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head><title>Student Directory</title></head>
+<body>
+    <div layout:fragment="content">
+        <h1>Student Directory 🎓</h1>
+
+        <div th:if="${successMessage}" style="background: #d4edda; color: #155724; padding: 15px; border-radius: 5px; margin-bottom: 20px; border-left: 5px solid #28a745;">
+            <strong>✅ Success!</strong> <span th:text="${successMessage}"></span>
+        </div>
+
+        <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+            <a href="/enroll" style="background: #28a745; color: white; padding: 12px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">➕ Enroll New Student</a>
+            
+            <!-- Search Bar -->
+            <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search students..." style="padding: 10px 15px; border-radius: 25px; border: 1px solid #ccc; width: 300px;">
+        </div>
+
+        <table id="studentTable">
+            <thead>
+                <tr>
+                    <th>Profile</th>
+                    <th>Index Number</th>
+                    <th>Name</th>
+                    <th>Class</th>
+                    <th>Parent Info</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="student : ${students}" class="student-row">
+                    <!-- Profile Picture Column -->
+                    <td>
+                        <img th:if="${student.profilePicture != null}" th:src="${student.profilePicture}" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #e2e8f0;">
+                        <div th:if="${student.profilePicture == null}" style="width: 45px; height: 45px; border-radius: 50%; background: #e2e8f0; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #64748b;">
+                            <span th:text="${#strings.substring(student.firstName, 0, 1)}"></span>
+                        </div>
+                    </td>
+                    
+                    <td style="font-weight: bold; color: #007bff;" th:text="${student.indexNumber}">5250261101</td>
+                    
+                    <td style="font-weight: bold;" th:text="${student.firstName + ' ' + student.lastName}">John Doe</td>
+                    
+                    <td th:text="${student.classroom != null ? student.classroom.className : 'No Class'}">Basic 1</td>
+                    
+                    <td>
+                        <span th:if="${student.guardian != null}">
+                            <strong th:text="${student.guardian.fullName}">Parent Name</strong><br>
+                            <small style="color: #64748b;" th:text="${student.guardian.phone} + ' | ' + ${student.guardian.location}">Phone | Loc</small>
+                        </span>
+                        <span th:if="${student.guardian == null}" style="color: #dc3545;">None</span>
+                    </td>
+                    
+                    <td style="white-space: nowrap;">
+                        <a th:href="@{/student-profile/{id}(id=${student.id})}" class="action-link" style="color: #8b5cf6; margin-right: 10px;">Profile</a>
+                        <a th:href="@{/editStudent/{id}(id=${student.id})}" class="action-link edit">Update</a>
+                        <a th:href="@{/report-card/{id}(id=${student.id})}" class="action-link report">Report</a>
+                        <a th:href="@{/deleteStudent/{id}(id=${student.id})}" class="action-link delete" onclick="return confirm('Delete this student?');">Delete</a>
+                    </td>
+                </tr>
+                <tr th:if="${students == null || students.empty}">
+                    <td colspan="6" style="text-align: center; padding: 20px;">No students added yet. Click "Enroll New Student" to start.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        let debounceTimer;
+
+        if(searchInput) {
+            searchInput.addEventListener('input', function() {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    const query = this.value.toLowerCase();
+                    const rows = document.querySelectorAll('.student-row');
+                    
+                    rows.forEach(row => {
+                        const text = row.innerText.toLowerCase();
+                        row.style.display = text.includes(query) ? '' : 'none';
+                    });
+                }, 300);
+            });
+        }
+    </script>
+</body>
+</html>

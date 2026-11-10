@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head><title>Timetable</title></head>
+<body>
+    <div layout:fragment="content">
+        <h1>Class Timetable 📅</h1>
+
+        <div class="form-box" style="border-top: 5px solid #8b5cf6; margin-bottom: 30px;">
+            <h3>Create Schedule Entry</h3>
+            
+            <form action="/addTimetable" method="post">
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                    
+                    <!-- 1. CLASS -->
+                    <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                        <label style="font-weight: bold; font-size: 14px;">Class</label>
+                        <select name="classNameSelect" id="classNameSelect" style="width: 100%; margin-bottom: 5px;" onchange="toggleNewClass()">
+                            <option value="">-- Select Existing Class --</option>
+                            <option th:each="c : ${classrooms}" th:value="${c.className}" th:text="${c.className}"></option>
+                            <option value="NEW">➕ Add New Class...</option>
+                        </select>
+                        <input type="text" name="className" id="className" placeholder="Type New Class Name" style="width: 100%; display: none;">
+                    </div>
+
+                    <!-- 2. SUBJECT -->
+                    <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                        <label style="font-weight: bold; font-size: 14px;">Subject</label>
+                        <select name="subjectNameSelect" id="subjectNameSelect" style="width: 100%; margin-bottom: 5px;" onchange="toggleNewSubject()">
+                            <option value="">-- Select Existing Subject --</option>
+                            <option th:each="s : ${subjects}" th:value="${s.subjectName}" th:text="${s.subjectName}"></option>
+                            <option value="NEW">➕ Add New Subject...</option>
+                        </select>
+                        <input type="text" name="subjectName" id="subjectName" placeholder="Type New Subject Name" style="width: 100%; display: none;">
+                    </div>
+
+                    <!-- 3. TEACHER -->
+                    <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                        <label style="font-weight: bold; font-size: 14px;">Teacher</label>
+                        <select name="teacherId" required style="width: 100%;">
+                            <option value="">-- Select Teacher --</option>
+                            <option th:each="t : ${teachers}" th:value="${t.id}" th:text="${t.firstName + ' ' + t.lastName}"></option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 15px;">
+                    
+                    <!-- 4. MULTIPLE DAYS -->
+                    <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                        <label style="font-weight: bold; font-size: 14px; display: block; margin-bottom: 10px;">Select Days</label>
+                        <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                            <label style="font-weight: normal; cursor: pointer; display: flex; align-items: center;">
+                                <input type="checkbox" name="days" value="Monday" style="margin-right: 5px; width: auto;"> Monday
+                            </label>
+                            <label style="font-weight: normal; cursor: pointer; display: flex; align-items: center;">
+                                <input type="checkbox" name="days" value="Tuesday" style="margin-right: 5px; width: auto;"> Tuesday
+                            </label>
+                            <label style="font-weight: normal; cursor: pointer; display: flex; align-items: center;">
+                                <input type="checkbox" name="days" value="Wednesday" style="margin-right: 5px; width: auto;"> Wednesday
+                            </label>
+                            <label style="font-weight: normal; cursor: pointer; display: flex; align-items: center;">
+                                <input type="checkbox" name="days" value="Thursday" style="margin-right: 5px; width: auto;"> Thursday
+                            </label>
+                            <label style="font-weight: normal; cursor: pointer; display: flex; align-items: center;">
+                                <input type="checkbox" name="days" value="Friday" style="margin-right: 5px; width: auto;"> Friday
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- 5. TIME -->
+                    <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                        <label style="font-weight: bold; font-size: 14px;">Time Slot</label>
+                        <input type="text" name="timeSlot" placeholder="e.g. 08:00 - 09:00" required style="width: 100%;">
+                    </div>
+                </div>
+
+                <button type="submit" style="background: #8b5cf6; width: 100%; padding: 15px; margin-top: 15px; font-size: 18px;">Add Schedule for Selected Days</button>
+            </form>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Day</th>
+                    <th>Time</th>
+                    <th>Class</th>
+                    <th>Subject</th>
+                    <th>Teacher</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="t : ${timetables}">
+                    <td th:text="${t.dayOfWeek}" style="font-weight: bold; color: #8b5cf6;">Monday</td>
+                    <td th:text="${t.timeSlot}">08:00</td>
+                    <td th:text="${t.classroom.className}">Basic 1</td>
+                    <td th:text="${t.subject.subjectName}">Math</td>
+                    <td th:text="${t.teacher.firstName + ' ' + t.teacher.lastName}">Mr. John</td>
+                    <td style="white-space: nowrap;">
+                        <!-- EDIT BUTTON ADDED HERE -->
+                        <a th:href="@{/editTimetable/{id}(id=${t.id})}" class="action-link edit" style="margin-right: 10px;">Edit</a>
+                        <a th:href="@{/deleteTimetable/{id}(id=${t.id})}" class="action-link delete" onclick="return confirm('Delete this entry?');">Delete</a>
+                    </td>
+                </tr>
+                <tr th:if="${timetables == null || timetables.empty}">
+                    <td colspan="6" style="text-align: center; padding: 20px;">No schedule created yet.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function toggleNewClass() {
+            const select = document.getElementById('classNameSelect');
+            const input = document.getElementById('className');
+            if (select.value === 'NEW') {
+                input.style.display = 'block';
+                input.required = true;
+            } else {
+                input.style.display = 'none';
+                input.required = false;
+                input.value = '';
+            }
+        }
+
+        function toggleNewSubject() {
+            const select = document.getElementById('subjectNameSelect');
+            const input = document.getElementById('subjectName');
+            if (select.value === 'NEW') {
+                input.style.display = 'block';
+                input.required = true;
+            } else {
+                input.style.display = 'none';
+                input.required = false;
+                input.value = ''; 
+            }
+        }
+
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const classSelect = document.getElementById('classNameSelect');
+            if (classSelect.value !== 'NEW' && classSelect.value !== '') {
+                const hidden = document.createElement('input');
+                hidden.type = 'hidden';
+                hidden.name = 'className';
+                hidden.value = classSelect.value;
+                this.appendChild(hidden);
+            }
+
+            const subSelect = document.getElementById('subjectNameSelect');
+            if (subSelect.value !== 'NEW' && subSelect.value !== '') {
+                const hidden = document.createElement('input');
+                hidden.type = 'hidden';
+                hidden.name = 'subjectName';
+                hidden.value = subSelect.value;
+                this.appendChild(hidden);
+            }
+            
+            const checkedDays = document.querySelectorAll('input[name="days"]:checked');
+            if (checkedDays.length === 0) {
+                alert("Please select at least one day.");
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>

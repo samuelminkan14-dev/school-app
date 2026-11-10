@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout-teacher}">
+<head><title>Teacher Dashboard</title></head>
+<body>
+    <div layout:fragment="content">
+        
+        <!-- SUCCESS & ERROR MESSAGES -->
+        <div th:if="${successMessage}" style="background: #d1fae5; color: #065f46; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid #10b981;">
+            <strong>✅ Success:</strong> <span th:text="${successMessage}"></span>
+        </div>
+        <div th:if="${error}" style="background: #fee2e2; color: #991b1b; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid #ef4444;">
+            <strong>⚠️ Error:</strong> <span th:text="${error}"></span>
+        </div>
+
+        <!-- WELCOME CARD -->
+        <div class="card" style="display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #3b82f6;">
+            <div>
+                <h2 style="margin-top: 0; color: #1e293b;">Welcome, <span th:text="${teacher.firstName + ' ' + teacher.lastName}">Teacher</span>!</h2>
+                <p style="margin-bottom: 0; color: #666;">Manage your classes, upload materials, and track student progress.</p>
+            </div>
+            <a th:href="@{/teacher/timetable}" style="background: #3b82f6; color: white; padding: 12px 20px; border-radius: 5px; text-decoration: none; font-weight: bold;">📅 View Timetable</a>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            
+            <!-- MY CLASSES -->
+            <div class="card">
+                <h3>🏫 My Classes</h3>
+                <div th:each="c : ${myClasses}" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #eee;">
+                    <strong th:text="${c.className}" style="font-size: 16px;">Basic 1</strong>
+                    <div style="display: flex; gap: 5px;">
+                        <a th:href="@{/teacher/roster(classId=${c.id})}" style="background: #64748b; color: white; padding: 8px 12px; border-radius: 5px; text-decoration: none; font-size: 13px; font-weight: bold;">Roster</a>
+                        <a th:href="@{/teacher/attendance(classId=${c.id})}" style="background: #10b981; color: white; padding: 8px 12px; border-radius: 5px; text-decoration: none; font-size: 13px; font-weight: bold;">Attendance</a>
+                        <a th:href="@{/teacher/enterMarks(classId=${c.id})}" style="background: #3b82f6; color: white; padding: 8px 12px; border-radius: 5px; text-decoration: none; font-size: 13px; font-weight: bold;">Marks</a>
+                    </div>
+                </div>
+                <div th:if="${myClasses == null || myClasses.empty}" style="color: #888; padding: 10px;">No classes assigned.</div>
+            </div>
+
+            <!-- LMS: UPLOAD ASSESSMENT -->
+            <div class="card">
+                <h3>📝 Create Assessment</h3>
+                <form action="/teacher/uploadQuiz" method="post">
+                    <input type="text" name="title" placeholder="Title (e.g. Math Quiz 1)" required>
+                    <input type="text" name="description" placeholder="Instructions" required>
+                    <select name="assessmentType" required>
+                        <option value="Quiz">Quiz</option>
+                        <option value="Assignment">Assignment</option>
+                        <option value="Project">Project</option>
+                    </select>
+                    <input type="number" step="0.1" name="maxScore" placeholder="Total Marks (e.g. 50)" required>
+                    <input type="date" name="dueDate" required>
+                    <select name="classId" required>
+                        <option value="">-- Select Class --</option>
+                        <option th:each="c : ${myClasses}" th:value="${c.id}" th:text="${c.className}"></option>
+                    </select>
+                    <button type="submit" style="background: #8b5cf6;">Publish Assessment</button>
+                </form>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            
+            <!-- UPLOAD RESOURCE (WITH SECURITY) -->
+            <div class="card">
+                <h3>📁 Upload Learning Resource</h3>
+                <p style="font-size: 12px; color: #888; margin-top: 0;">Allowed: PDF, Word, PowerPoint, TXT (Max 10MB)</p>
+                <form action="/teacher/uploadResource" method="post" enctype="multipart/form-data">
+                    <input type="text" name="title" placeholder="Resource Title (e.g. Chapter 1 Notes)" required>
+                    <select name="classId" required>
+                        <option value="">-- Select Class --</option>
+                        <option th:each="c : ${myClasses}" th:value="${c.id}" th:text="${c.className}"></option>
+                    </select>
+                    <input type="file" name="file" required accept=".pdf,.doc,.docx,.ppt,.pptx,.txt" style="padding: 8px; background: #f8fafc;">
+                    <button type="submit" style="background: #10b981;">Upload Resource</button>
+                </form>
+            </div>
+
+            <!-- MY RESOURCES -->
+            <div class="card">
+                <h3>📚 My Uploaded Resources</h3>
+                <table style="margin-top: 0;">
+                    <tr style="background: #f8fafc; text-align: left;">
+                        <th>Title</th>
+                        <th>Class</th>
+                        <th>Action</th>
+                    </tr>
+                    <tr th:each="r : ${myResources}">
+                        <td th:text="${r.title}">Chapter 1</td>
+                        <td th:text="${r.classroom.className}">Basic 1</td>
+                        <td><a th:href="@{/teacher/downloadResource/{id}(id=${r.id})}" style="color: #3b82f6; font-weight: bold; text-decoration: none;">Download</a></td>
+                    </tr>
+                    <tr th:if="${myResources == null || myResources.empty}">
+                        <td colspan="3" style="text-align: center; padding: 20px; color: #888;">No resources uploaded.</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- MY ASSESSMENTS -->
+        <div class="card">
+            <h3>📚 My Published Assessments</h3>
+            <table style="margin-top: 0;">
+                <tr style="background: #f8fafc; text-align: left;">
+                    <th>Type</th>
+                    <th>Title</th>
+                    <th>Class</th>
+                    <th>Total Marks</th>
+                    <th>Due Date</th>
+                    <th>Action</th>
+                </tr>
+                <tr th:each="q : ${myQuizzes}">
+                    <td style="font-weight: bold; color: #8b5cf6;" th:text="${q.assessmentType}">Quiz</td>
+                    <td th:text="${q.title}">Math Quiz 1</td>
+                    <td th:text="${q.classroom.className}">Basic 1</td>
+                    <td th:text="${q.maxScore}">50</td>
+                    <td th:text="${q.dueDate}">2026-11-15</td>
+                    <td><a th:href="@{/teacher/gradeQuiz/{id}(id=${q.id})}" style="color: #8b5cf6; font-weight: bold; text-decoration: none;">Grade</a></td>
+                </tr>
+                <tr th:if="${myQuizzes == null || myQuizzes.empty}">
+                    <td colspan="6" style="text-align: center; padding: 20px; color: #888;">No assessments published yet.</td>
+                </tr>
+            </table>
+        </div>
+
+    </div>
+</body>
+</html>

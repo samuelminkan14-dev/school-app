@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head><title>Staff Management</title></head>
+<body>
+    <div layout:fragment="content">
+        <h1>Non-Teaching Staff Management 👷</h1>
+
+        <div class="form-box" style="border-top: 5px solid #6c757d;">
+            <h3>Add New Staff Member</h3>
+            <form action="/addStaff" method="post" style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; gap: 10px;">
+                <input type="text" name="fullName" placeholder="Full Name" required>
+                <select name="role" required>
+                    <option value="">-- Select Role --</option>
+                    <option value="Cook">Cook</option>
+                    <option value="Driver">Driver</option>
+                    <option value="Security">Security</option>
+                    <option value="Cleaner">Cleaner</option>
+                    <option value="Admin Staff">Admin Staff</option>
+                </select>
+                <input type="text" name="phone" placeholder="Phone Number" required>
+                <input type="number" step="0.01" name="salary" placeholder="Monthly Salary" required>
+                <button type="submit" style="background: #6c757d;">Save Staff</button>
+            </form>
+        </div>
+
+        <h2>Staff List</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Full Name</th>
+                    <th>Role</th>
+                    <th>Phone</th>
+                    <th>Salary</th>
+                    <th>Hire Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="s : ${staffList}">
+                    <td th:text="${s.id}">1</td>
+                    <td th:text="${s.fullName}" style="font-weight: bold;">John Doe</td>
+                    <td><span style="background: #e9ecef; padding: 5px 10px; border-radius: 20px;" th:text="${s.role}">Cook</span></td>
+                    <td th:text="${s.phone}">+233...</td>
+                    <td style="color: #28a745; font-weight: bold;" th:text="'$' + ${s.salary}">$500</td>
+                    <td th:text="${s.hireDate}">2026-11-09</td>
+                    <td>
+                        <a th:href="@{/deleteStaff/{id}(id=${s.id})}" class="action-link delete" onclick="return confirm('Delete this staff member?');">Delete</a>
+                    </td>
+                </tr>
+                <tr th:if="${staffList == null || staffList.empty}">
+                    <td colspan="7" style="text-align: center; padding: 20px;">No non-teaching staff added yet.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

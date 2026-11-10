@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head><title>Student Pickup</title></head>
+<body>
+    <div layout:fragment="content">
+        <h1>Student Pickup Log 🚸</h1>
+
+        <div class="form-box" style="border-top: 5px solid #6366f1; margin-bottom: 30px;">
+            <h3>Record a Pickup</h3>
+            <form action="/recordPickup" method="post" style="display: flex; gap: 10px;">
+                <select name="studentId" required style="flex: 1;">
+                    <option value="">-- Select Student --</option>
+                    <option th:each="s : ${students}" th:value="${s.id}" th:text="${s.firstName + ' ' + s.lastName + ' (' + s.classroom.className + ')'}"></option>
+                </select>
+                <input type="text" name="pickedUpBy" placeholder="Picked up by (Name)" required style="flex: 1;">
+                <button type="submit" style="background: #6366f1;">Confirm Pickup & Alert Parent</button>
+            </form>
+        </div>
+
+        <h2>Recent Pickups</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>Student</th>
+                    <th>Class</th>
+                    <th>Picked Up By</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="l : ${logs}">
+                    <td th:text="${l.pickupTime}">14:30</td>
+                    <td style="font-weight: bold;" th:text="${l.student.firstName + ' ' + l.student.lastName}">John Doe</td>
+                    <td th:text="${l.student.classroom != null ? l.student.classroom.className : 'N/A'}">Nursery 1</td>
+                    <td th:text="${l.pickedUpBy}">Auntie Mary</td>
+                </tr>
+                <tr th:if="${logs == null || logs.empty}">
+                    <td colspan="4" style="text-align: center; padding: 20px;">No pickups recorded yet.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

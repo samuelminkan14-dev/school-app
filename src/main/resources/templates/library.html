@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head><title>Library</title></head>
+<body>
+    <div layout:fragment="content">
+        <h1>Library Management 📚</h1>
+
+        <div style="display: flex; gap: 20px; margin-bottom: 30px;">
+            <div class="form-box" style="flex: 1; border-top: 5px solid #007bff;">
+                <h3>Add New Book</h3>
+                <form action="/addBook" method="post">
+                    <input type="text" name="title" placeholder="Book Title" required>
+                    <input type="text" name="author" placeholder="Author Name" required>
+                    <input type="text" name="isbn" placeholder="ISBN Number" required>
+                    <button type="submit" style="width: 100%;">Add Book</button>
+                </form>
+            </div>
+
+            <div class="form-box" style="flex: 1; border-top: 5px solid #ffc107;">
+                <h3>Borrow a Book</h3>
+                <form action="/borrowBook" method="post">
+                    <select name="bookId" required>
+                        <option value="">-- Select Book --</option>
+                        <option th:each="b : ${books}" th:value="${b.id}" th:text="${b.title}"></option>
+                    </select>
+                    <select name="studentId" required>
+                        <option value="">-- Select Student --</option>
+                        <option th:each="s : ${students}" th:value="${s.id}" th:text="${s.firstName + ' ' + s.lastName}"></option>
+                    </select>
+                    <button type="submit" style="background: #ffc107; color: #333; width: 100%;">Borrow Book</button>
+                </form>
+            </div>
+        </div>
+
+        <h2>Loan History</h2>
+        <table>
+            <thead>
+                <tr><th>Book Title</th><th>Student</th><th>Borrow Date</th><th>Status</th><th>Action</th></tr>
+            </thead>
+            <tbody>
+                <tr th:each="l : ${loans}">
+                    <td th:text="${l.book.title}">Book Title</td>
+                    <td th:text="${l.student.firstName + ' ' + l.student.lastName}">Student Name</td>
+                    <td th:text="${l.borrowDate}">2026-11-08</td>
+                    <td>
+                        <span th:if="${l.returnDate == null}" style="color: #dc3545; font-weight: bold;">Borrowed</span>
+                        <span th:if="${l.returnDate != null}" style="color: #28a745; font-weight: bold;" th:text="'Returned on ' + ${l.returnDate}">Returned</span>
+                    </td>
+                    <td>
+                        <a th:if="${l.returnDate == null}" th:href="@{/returnBook/{id}(id=${l.id})}" style="color: blue; font-weight: bold; text-decoration: none;">Mark as Returned</a>
+                        <span th:if="${l.returnDate != null}" style="color: #888;">-</span>
+                    </td>
+                </tr>
+                <tr th:if="${loans == null || loans.empty}">
+                    <td colspan="5" style="text-align: center; padding: 20px;">No books borrowed yet.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

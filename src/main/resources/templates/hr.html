@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head><title>HR & Leave</title></head>
+<body>
+    <div layout:fragment="content">
+        <h1>HR & Leave Management 🗂️</h1>
+
+        <div class="form-box" style="border-top: 5px solid #e83e8c;">
+            <h3>Request Leave for Teacher</h3>
+            <form action="/requestLeave" method="post">
+                <select name="teacherId" required>
+                    <option value="">-- Select Teacher --</option>
+                    <option th:each="t : ${teachers}" th:value="${t.id}" th:text="${t.firstName + ' ' + t.lastName}"></option>
+                </select>
+                <label>Start Date:</label>
+                <input type="date" name="startDate" required>
+                <label>End Date:</label>
+                <input type="date" name="endDate" required>
+                <input type="text" name="reason" placeholder="Reason for leave" required>
+                <button type="submit" style="background: #e83e8c; width: 100%;">Submit Request</button>
+            </form>
+        </div>
+
+        <h2>Leave Requests</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Teacher</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Reason</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="l : ${leaves}">
+                    <td th:text="${l.teacher.firstName + ' ' + l.teacher.lastName}">Mr. John</td>
+                    <td th:text="${l.startDate}">2026-11-09</td>
+                    <td th:text="${l.endDate}">2026-11-10</td>
+                    <td th:text="${l.reason}">Sick</td>
+                    <td>
+                        <span th:if="${l.status == 'PENDING'}" style="color: #ffc107; font-weight: bold;">PENDING</span>
+                        <span th:if="${l.status == 'APPROVED'}" style="color: #28a745; font-weight: bold;">APPROVED</span>
+                        <span th:if="${l.status == 'REJECTED'}" style="color: #dc3545; font-weight: bold;">REJECTED</span>
+                    </td>
+                    <td>
+                        <a th:if="${l.status == 'PENDING'}" th:href="@{/approveLeave/{id}(id=${l.id})}" style="color: #28a745; font-weight: bold; margin-right: 10px;">Approve</a>
+                        <a th:if="${l.status == 'PENDING'}" th:href="@{/rejectLeave/{id}(id=${l.id})}" style="color: #dc3545; font-weight: bold;">Reject</a>
+                    </td>
+                </tr>
+                <tr th:if="${leaves == null || leaves.empty}">
+                    <td colspan="6" style="text-align: center; padding: 20px;">No leave requests found.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

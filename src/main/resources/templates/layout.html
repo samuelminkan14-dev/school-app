@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Management System</title>
+    <style>
+        :root {
+            --bg-dark: #1e293b; --bg-darker: #0f172a; --text-light: #94a3b8;
+            --text-white: #f8fafc; --accent: #3b82f6; --danger: #ef4444;
+        }
+
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #f1f5f9; display: flex; height: 100vh; overflow: hidden; }
+        
+        /* --- HAMBURGER BUTTON --- */
+        .hamburger {
+            position: fixed; top: 15px; left: 15px; font-size: 24px; cursor: pointer;
+            background: var(--bg-dark); color: white; padding: 8px 12px;
+            border-radius: 8px; z-index: 2000; border: none; transition: 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .hamburger:hover { background: var(--bg-darker); }
+
+        /* --- LOGOUT BUTTON --- */
+        .top-logout {
+            position: fixed; top: 15px; right: 20px; background: var(--danger);
+            color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none;
+            font-weight: bold; font-size: 15px; z-index: 2000;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: 0.3s;
+        }
+        .top-logout:hover { background: #dc2626; }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: 260px; background-color: var(--bg-dark); color: white;
+            height: 100vh; position: fixed; left: 0; top: 0; transition: 0.3s;
+            z-index: 1000; box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+            padding-top: 60px; display: flex; flex-direction: column;
+        }
+        .sidebar.closed { left: -260px; }
+        
+        .sidebar h2 { text-align: center; padding: 10px 0 20px 0; margin: 0; border-bottom: 1px solid var(--bg-darker); font-size: 18px; flex-shrink: 0; color: var(--text-white); letter-spacing: 1px; }
+        .sidebar-links { flex: 1; overflow-y: auto; }
+        .sidebar-links::-webkit-scrollbar { width: 6px; }
+        .sidebar-links::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+
+        .sidebar a { display: block; color: var(--text-light); padding: 12px 20px; text-decoration: none; font-size: 15px; transition: 0.2s; border-left: 3px solid transparent; }
+        .sidebar a:hover { background-color: var(--bg-darker); color: var(--text-white); }
+
+        .dropdown-btn {
+            background-color: var(--bg-dark); color: var(--text-white);
+            padding: 14px 20px; font-size: 15px; border: none;
+            border-bottom: 1px solid var(--bg-darker); cursor: pointer;
+            width: 100%; text-align: left; outline: none; font-weight: 600;
+            display: flex; justify-content: space-between; align-items: center;
+            transition: 0.2s;
+        }
+        .dropdown-btn:hover { background-color: var(--bg-darker); }
+        .dropdown-btn.active { border-left: 3px solid var(--accent); background-color: var(--bg-darker); }
+        .dropdown-container { display: none; background-color: var(--bg-darker); }
+        .dropdown-container a { padding-left: 45px; font-size: 14px; border-bottom: none; }
+        .dropdown-btn:after { content: '\25BC'; font-size: 10px; transition: 0.3s; }
+        .dropdown-btn.active:after { content: '\25B2'; }
+
+        /* --- MAIN CONTENT --- */
+        .main-content {
+            margin-left: 260px; width: calc(100% - 260px);
+            padding: 80px 30px 30px 30px; transition: 0.3s;
+            height: 100vh; overflow-y: auto;
+        }
+        .main-content.full-width { margin-left: 0; width: 100%; }
+
+        /* --- TABLES & FORMS --- */
+        table { border-collapse: collapse; width: 100%; margin-top: 20px; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-radius: 8px; overflow: hidden; }
+        th, td { border-bottom: 1px solid #e2e8f0; padding: 15px; text-align: left; }
+        th { background-color: #f8fafc; text-transform: uppercase; font-size: 13px; color: #64748b; font-weight: 600; }
+        
+        .form-box { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        input[type="text"], input[type="number"], input[type="email"], input[type="password"], input[type="date"], select, textarea { 
+            width: 100%; padding: 10px 12px; margin: 8px 0; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; font-family: inherit;
+        }
+        button { padding: 10px 20px; background: var(--accent); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 15px; }
+        button:hover { background: #2563eb; }
+        
+        .action-link { text-decoration: none; font-weight: bold; }
+        .edit { color: var(--accent); margin-right: 10px; }
+        .delete { color: var(--danger); }
+        .report { color: #10b981; margin-right: 10px; }
+
+        .floating-back {
+            position: fixed; bottom: 30px; right: 30px; padding: 12px 24px; background: #64748b; color: white; border: none; border-radius: 50px; font-size: 15px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); z-index: 1000;
+        }
+        .floating-back:hover { background: #475569; }
+
+        @media (max-width: 768px) {
+            .sidebar { left: -260px; }
+            .sidebar.mobile-open { left: 0; }
+            .main-content { margin-left: 0; width: 100%; padding-top: 80px; }
+            .form-grid, .grid, .dashboard-cards, .columns-container { display: flex !important; flex-direction: column !important; gap: 15px !important; }
+            table { display: block; overflow-x: auto; white-space: nowrap; }
+            .full-width-btn, .submit-btn { width: 100%; }
+            .top-logout { padding: 8px 12px; font-size: 14px; }
+        }
+    </style>
+</head>
+<body>
+
+    <button class="hamburger" onclick="toggleSidebar()">☰</button>
+    <a href="/logout" class="top-logout">🚪 Logout</a>
+
+    <div class="sidebar" id="sidebar">
+        <h2>🏫 <span th:text="${globalSettings != null ? globalSettings.schoolName : 'SCHOOL MS'}">SCHOOL MS</span></h2>
+        <div class="sidebar-links" id="sidebarLinks">
+            <a href="/dashboard">📊 Dashboard</a>
+            
+            <button class="dropdown-btn">👨‍💼 ADMIN</button>
+            <div class="dropdown-container">
+                <a href="/users">🔐 Users</a>
+                <a href="/announcements">📢 Announcements</a>
+                <a href="/">🎓 Students</a>
+                <a href="/guardians">👨‍👩‍👧 Guardians</a>
+                <a href="/teachers">👩‍🏫 Teachers</a>
+                <a href="/staff">👷 Staff</a>
+                <a href="/academics">📚 Academics</a>
+                <a href="/settings">⚙️ Settings</a>
+                <a href="/audit-logs">📋 Audit Logs</a>
+            </div>
+            
+            <button class="dropdown-btn">💰 ACCOUNTANT</button>
+            <div class="dropdown-container">
+                <a href="/finance">💵 Fees & Payments</a>
+                <a href="/payroll">💸 Payroll</a>
+                <a href="/store">🛒 Store</a>
+            </div>
+            
+            <button class="dropdown-btn">🏫 MANAGE SCHOOL</button>
+            <div class="dropdown-container">
+                <a href="/attendance">✅ Attendance</a>
+                <a href="/marks">📝 Marks</a>
+                <a href="/gradebook">📈 Gradebook</a>
+                <a href="/library">📖 Library</a>
+                <a href="/transport">🚌 Transport</a>
+                <a href="/timetable">📅 Timetable</a>
+                <a href="/events">📅 Events</a>
+                <a href="/pickup">🚸 Pickup Log</a>
+                <a href="/bulk-import">📁 Bulk Import</a>
+            </div>
+            
+            <button class="dropdown-btn">🗂️ HR</button>
+            <div class="dropdown-container">
+                <a href="/hr">📋 Leave Requests</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content" id="mainContent">
+        <div layout:fragment="content"></div>
+    </div>
+
+    <button onclick="history.back()" class="floating-back">⬅ Go Back</button>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            if (window.innerWidth <= 768) {
+                sidebar.classList.toggle('mobile-open');
+            } else {
+                sidebar.classList.toggle('closed');
+                mainContent.classList.toggle('full-width');
+            }
+            localStorage.setItem('sidebarClosed', sidebar.classList.contains('closed'));
+        }
+
+        var dropdowns = document.getElementsByClassName("dropdown-btn");
+        for (var i = 0; i < dropdowns.length; i++) {
+            dropdowns[i].addEventListener("click", function() {
+                // 1. Check if this menu is currently open
+                var isAlreadyOpen = this.classList.contains("active");
+
+                // 2. Close ALL menus first
+                var allDropdowns = document.getElementsByClassName("dropdown-btn");
+                for (var j = 0; j < allDropdowns.length; j++) {
+                    allDropdowns[j].classList.remove("active");
+                    allDropdowns[j].nextElementSibling.style.display = "none";
+                }
+
+                // 3. If the menu wasn't open, open it now
+                if (!isAlreadyOpen) {
+                    this.classList.add("active");
+                    this.nextElementSibling.style.display = "block";
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentPath = window.location.pathname;
+            const allLinks = document.querySelectorAll('.dropdown-container a');
+
+            allLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPath && currentPath !== '/') {
+                    const parentContainer = link.parentElement;
+                    parentContainer.style.display = "block";
+                    parentContainer.previousElementSibling.classList.add("active");
+                    link.style.color = "var(--accent)";
+                    link.style.backgroundColor = "#1e293b";
+                    link.style.borderLeft = "3px solid var(--accent)";
+                }
+            });
+            
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            if (window.innerWidth > 768 && localStorage.getItem('sidebarClosed') === 'true') {
+                sidebar.classList.add('closed');
+                mainContent.classList.add('full-width');
+            }
+        });
+    </script>
+</body>
+</html>

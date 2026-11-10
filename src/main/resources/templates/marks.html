@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head><title>Marks</title></head>
+<body>
+    <div layout:fragment="content">
+        <h1>Marks & Exams 📝</h1>
+
+        <div style="display: flex; gap: 20px; margin-bottom: 30px;">
+            <div class="form-box" style="flex: 1; border-top: 5px solid #6f42c1;">
+                <h3>Create New Exam</h3>
+                <form action="/createExam" method="post">
+                    <input type="text" name="examName" placeholder="Exam Name (e.g. Midterm 1)" required>
+                    <button type="submit" style="background: #6f42c1; width: 100%;">Create Exam</button>
+                </form>
+            </div>
+
+            <div class="form-box" style="flex: 1; border-top: 5px solid #fd7e14;">
+                <h3>Enter Student Mark</h3>
+                <form action="/saveMark" method="post">
+                    <select name="studentId" required>
+                        <option value="">-- Select Student --</option>
+                        <option th:each="s : ${students}" th:value="${s.id}" th:text="${s.firstName + ' ' + s.lastName}"></option>
+                    </select>
+                    <select name="examId" required>
+                        <option value="">-- Select Exam --</option>
+                        <option th:each="e : ${exams}" th:value="${e.id}" th:text="${e.examName}"></option>
+                    </select>
+                    <input type="number" step="0.1" name="score" placeholder="Score (e.g. 85.5)" required>
+                    <button type="submit" style="background: #fd7e14; width: 100%;">Save Mark</button>
+                </form>
+            </div>
+        </div>
+
+        <h2>Saved Marks</h2>
+        <table>
+            <thead>
+                <tr><th>Student Name</th><th>Exam Name</th><th>Score</th></tr>
+            </thead>
+            <tbody>
+                <tr th:each="m : ${marks}">
+                    <td th:text="${m.student.firstName + ' ' + m.student.lastName}">John Doe</td>
+                    <td th:text="${m.exam.examName}">Midterm 1</td>
+                    <td><span style="background: #e9ecef; padding: 5px 10px; border-radius: 20px; font-weight: bold;" th:text="${m.score} + ' / 100'">85.5 / 100</span></td>
+                </tr>
+                <tr th:if="${marks == null || marks.empty}">
+                    <td colspan="3" style="text-align: center; padding: 20px;">No marks entered yet.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

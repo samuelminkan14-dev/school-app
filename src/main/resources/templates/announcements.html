@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head><title>Announcements</title></head>
+<body>
+    <div layout:fragment="content">
+        <h1>Announcements 📢</h1>
+
+        <div class="form-box" style="border-top: 5px solid #dc3545;">
+            <h3>Post New Announcement</h3>
+            <form action="/addAnnouncement" method="post" style="display: flex; gap: 10px;">
+                <input type="text" name="title" placeholder="Title" required style="flex: 1;">
+                <input type="text" name="message" placeholder="Message" required style="flex: 2;">
+                <select name="priority" required>
+                    <option value="High">🔴 High Priority</option>
+                    <option value="Normal">🟡 Normal</option>
+                    <option value="Low">🟢 Low</option>
+                </select>
+                <button type="submit" style="background: #dc3545;">Post</button>
+            </form>
+        </div>
+
+        <h2>Active Announcements</h2>
+        <div style="display: grid; gap: 15px; margin-top: 20px;">
+            <div th:each="a : ${announcements}" style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-left: 5px solid #ccc;"
+                 th:style="${a.priority == 'High' ? 'border-left-color: #dc3545;' : (a.priority == 'Normal' ? 'border-left-color: #ffc107;' : 'border-left-color: #28a745;')}">
+                
+                <div style="display: flex; justify-content: space-between; align-items: start;">
+                    <h3 style="margin: 0;" th:text="${a.title}">Title</h3>
+                    <a th:href="@{/deleteAnnouncement/{id}(id=${a.id})}" style="color: #dc3545; text-decoration: none; font-weight: bold;" onclick="return confirm('Delete?');">✖</a>
+                </div>
+                <p style="margin: 10px 0; color: #444;" th:text="${a.message}">Message</p>
+                <small style="color: #888;">Posted on <span th:text="${a.datePosted}"></span></small>
+            </div>
+            <div th:if="${announcements == null || announcements.empty}" style="text-align: center; padding: 20px; color: #888;">
+                No announcements posted yet.
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head><title>Student Profile</title></head>
+<body>
+    <div layout:fragment="content">
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h1>Student Profile 🎓</h1>
+            <a href="/" style="background: #64748b; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">⬅ Back to Directory</a>
+        </div>
+
+        <div class="columns-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+            
+            <!-- LEFT COLUMN: Profile Picture & Info -->
+            <div class="form-box" style="border-top: 5px solid #3b82f6; margin-bottom: 0;">
+                
+                <!-- Large Profile Picture -->
+                <div style="text-align: center; margin-bottom: 25px;">
+                    <img th:if="${student.profilePicture != null}" th:src="${student.profilePicture}" style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 4px solid #3b82f6; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                    
+                    <div th:if="${student.profilePicture == null}" style="width: 150px; height: 150px; border-radius: 50%; background: #e2e8f0; display: inline-flex; align-items: center; justify-content: center; font-size: 60px; font-weight: bold; color: #64748b; border: 4px solid #e2e8f0;">
+                        <span th:text="${#strings.substring(student.firstName, 0, 1)}"></span>
+                    </div>
+                </div>
+
+                <h3 style="text-align: center; margin-bottom: 20px;" th:text="${student.firstName + ' ' + student.lastName}">John Doe</h3>
+
+                <!-- Personal Info Table -->
+                <table style="box-shadow: none; margin-top: 10px;">
+                    <tbody>
+                        <tr>
+                            <th style="width: 45%; background: #f8fafc;">Index Number</th>
+                            <td th:text="${student.indexNumber}" style="font-weight: bold; color: #3b82f6;"></td>
+                        </tr>
+                        <tr>
+                            <th style="background: #f8fafc;">Class</th>
+                            <td th:text="${student.classroom != null ? student.classroom.className : 'Unassigned'}"></td>
+                        </tr>
+                        <tr>
+                            <th style="background: #f8fafc;">Admission Date</th>
+                            <td th:text="${student.admissionDate}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Guardian Info Table -->
+                <h3 style="margin-top: 30px; border-bottom: 2px solid #eee; padding-bottom: 10px;">👨‍👩‍👧 Guardian Info</h3>
+                
+                <table style="box-shadow: none; margin-top: 10px;" th:if="${student.guardian != null}">
+                    <tbody>
+                        <tr>
+                            <th style="width: 45%; background: #f8fafc;">Name</th>
+                            <td th:text="${student.guardian.fullName}"></td>
+                        </tr>
+                        <tr>
+                            <th style="background: #f8fafc;">Phone</th>
+                            <td th:text="${student.guardian.phone}"></td>
+                        </tr>
+                        <tr>
+                            <th style="background: #f8fafc;">Location</th>
+                            <td th:text="${student.guardian.location}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p th:if="${student.guardian == null}" style="color: #dc3545; text-align: center; margin-top: 10px;">No guardian linked to this student.</p>
+            </div>
+
+            <!-- RIGHT COLUMN: Documents -->
+            <div class="form-box" style="border-top: 5px solid #10b981; margin-bottom: 0;">
+                <h3>📁 Documents & Files</h3>
+                <p style="color: #64748b; font-size: 14px; margin-bottom: 15px;">Upload birth certificates, transcripts, or medical records.</p>
+                
+                <form th:action="@{/uploadDocument/{id}(id=${student.id})}" method="post" enctype="multipart/form-data" style="display: flex; gap: 10px; margin-bottom: 25px; align-items: center;">
+                    <input type="file" name="file" required style="margin: 0; padding: 8px; border: 1px solid #ccc; border-radius: 5px; width: 100%;">
+                    <button type="submit" style="background: #10b981; white-space: nowrap;">Upload File</button>
+                </form>
+
+                <table style="box-shadow: none;">
+                    <thead>
+                        <tr>
+                            <th>File Name</th>
+                            <th>Type</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="doc : ${documents}">
+                            <td th:text="${doc.fileName}" style="font-weight: bold; color: #333;">birth_certificate.pdf</td>
+                            <td th:text="${doc.fileType}" style="color: #64748b; font-size: 13px;">application/pdf</td>
+                            <td>
+                                <a th:href="@{/downloadDocument/{id}(id=${doc.id})}" style="color: #3b82f6; font-weight: bold; text-decoration: none;">Download</a>
+                            </td>
+                        </tr>
+                        <tr th:if="${documents == null || documents.empty}">
+                            <td colspan="3" style="text-align: center; color: #888; padding: 30px;">No documents uploaded yet.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

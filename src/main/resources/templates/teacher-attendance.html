@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout-teacher}">
+<head><title>Mark Attendance</title></head>
+<body>
+    <div layout:fragment="content">
+        <h1>Mark Attendance for Today (<span th:text="${today}"></span>)</h1>
+        <table>
+            <thead>
+                <tr><th>Index Number</th><th>Student Name</th><th>Mark Attendance</th></tr>
+            </thead>
+            <tbody>
+                <tr th:each="student : ${students}">
+                    <td style="font-weight: bold; color: #3b82f6;" th:text="${student.indexNumber}">5250261101</td>
+                    <td th:text="${student.firstName + ' ' + student.lastName}">John Doe</td>
+                    <td>
+                        <form action="/teacher/saveAttendance" method="post" style="display: flex; gap: 10px; margin: 0;">
+                            <input type="hidden" name="studentId" th:value="${student.id}">
+                            <input type="hidden" name="classId" th:value="${classroom.id}">
+                            <select name="status" style="width: 120px; margin: 0;">
+                                <option value="Present">Present</option>
+                                <option value="Absent">Absent</option>
+                                <option value="Late">Late</option>
+                            </select>
+                            <button type="submit" style="width: auto; background: #10b981;">Save</button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${students == null || students.empty}">
+                    <td colspan="3" style="text-align: center; padding: 20px;">No students in this class.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
