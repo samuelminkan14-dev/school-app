@@ -15,7 +15,6 @@ public class AdminController {
     @Autowired private TeacherRepository teacherRepo;
     @Autowired private PasswordEncoder passwordEncoder;
 
-    // --- USER MANAGEMENT ROUTES ---
     @GetMapping("/users")
     public String showUsers(Model model) {
         model.addAttribute("users", userRepo.findAll());
@@ -31,9 +30,13 @@ public class AdminController {
         
         User user = new User();
         user.setUsername(username);
+        
+        // 🔴 THIS IS THE FIX: Encrypt the password before saving it!
         user.setPassword(passwordEncoder.encode(password));
+        
         user.setRole(role);
         
+        // If the role is TEACHER, link the account to the Teacher profile
         if ("TEACHER".equals(role) && linkedId != null) {
             user.setLinkedId(linkedId);
         }
