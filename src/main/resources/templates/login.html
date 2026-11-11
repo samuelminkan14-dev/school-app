@@ -5,93 +5,96 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - School App</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background-color: #f1f5f9; margin: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background-color: #f1f5f9; margin: 0; padding: 15px; }
         
         .login-box { 
             background: white; 
-            padding: 40px 50px; 
+            padding: 30px; 
             border-radius: 12px; 
             box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
             width: 100%; 
-            max-width: 450px; 
+            max-width: 380px; /* REDUCED SIZE */
         }
-        
-        /* DEVELOPER DETAILS AT TOP */
-        .dev-header {
-            text-align: center;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #e2e8f0;
-        }
-        .dev-header strong {
-            color: #1e293b;
-            font-size: 15px;
-            display: block;
-            margin-bottom: 5px;
-        }
-        .dev-header p {
-            margin: 2px 0;
-            font-size: 13px;
-            color: #64748b;
-        }
-        .dev-header a {
-            color: #10b981;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        .dev-header a:hover { text-decoration: underline; }
 
         .form-content { display: none; }
         .form-content.active { display: block; }
         
-        h2 { text-align: center; font-size: 26px; margin-bottom: 25px; color: #1e293b; }
+        h2 { text-align: center; font-size: 22px; margin-bottom: 20px; color: #1e293b; }
         
         input[type="text"], input[type="password"], input[type="email"] { 
-            width: 100%; padding: 15px; margin: 10px 0; 
+            width: 100%; padding: 12px; margin: 8px 0; 
             border: 1px solid #cbd5e1; border-radius: 8px; 
-            box-sizing: border-box; font-size: 16px; 
+            box-sizing: border-box; font-size: 15px; 
         }
         
         .password-wrapper { position: relative; }
-        .eye-icon { position: absolute; right: 15px; top: 25px; cursor: pointer; color: #64748b; font-size: 18px; }
+        .eye-icon { position: absolute; right: 12px; top: 20px; cursor: pointer; color: #64748b; font-size: 16px; }
         
         button { 
-            width: 100%; padding: 15px; background: #3b82f6; color: white; 
+            width: 100%; padding: 12px; background: #3b82f6; color: white; 
             border: none; border-radius: 8px; cursor: pointer; 
-            font-size: 18px; font-weight: bold; margin-top: 15px; 
+            font-size: 16px; font-weight: bold; margin-top: 12px; 
         }
         button:hover { background: #2563eb; }
         
-        .error { color: #ef4444; font-size: 15px; margin-bottom: 15px; text-align: center; background: #fee2e2; padding: 10px; border-radius: 5px; }
-        .success { color: #10b981; font-size: 15px; margin-bottom: 15px; text-align: center; background: #d1fae5; padding: 10px; border-radius: 5px; }
+        .error { color: #ef4444; font-size: 14px; margin-bottom: 12px; text-align: center; background: #fee2e2; padding: 8px; border-radius: 5px; }
+        .success { color: #10b981; font-size: 14px; margin-bottom: 12px; text-align: center; background: #d1fae5; padding: 8px; border-radius: 5px; }
         
-        .forgot-link { display: block; text-align: right; font-size: 14px; color: #3b82f6; text-decoration: none; margin-top: 8px; }
+        .forgot-link { display: block; text-align: right; font-size: 13px; color: #3b82f6; text-decoration: none; margin-top: 5px; }
         
-        .strength-meter { height: 6px; width: 100%; background: #e2e8f0; border-radius: 5px; margin-top: 5px; }
+        .strength-meter { height: 5px; width: 100%; background: #e2e8f0; border-radius: 5px; margin-top: 5px; }
         .strength-bar { height: 100%; width: 0%; border-radius: 5px; transition: 0.3s; }
-        .strength-text { font-size: 13px; margin-top: 5px; color: #64748b; }
+        .strength-text { font-size: 12px; margin-top: 3px; color: #64748b; }
         
-        .switch-link { text-align: center; margin-top: 25px; font-size: 15px; color: #64748b; }
+        .switch-link { text-align: center; margin-top: 20px; font-size: 14px; color: #64748b; }
         .switch-link a { color: #3b82f6; text-decoration: none; font-weight: bold; cursor: pointer; }
         .switch-link a:hover { text-decoration: underline; }
         
-        .remember-me { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 15px; }
+        .remember-me { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; font-size: 13px; }
         .remember-me label { display: flex; align-items: center; gap: 5px; cursor: pointer; }
+
+        /* LEGAL LINKS */
+        .legal-links { 
+            text-align: center; 
+            margin-top: 20px; 
+            font-size: 11px; 
+            color: #64748b; 
+            border-top: 1px solid #e2e8f0; 
+            padding-top: 12px; 
+        }
+        .legal-links a { color: #3b82f6; text-decoration: none; }
+        .legal-links a:hover { text-decoration: underline; }
+
+        /* DEVELOPER DETAILS AT BOTTOM */
+        .dev-footer {
+            text-align: center;
+            margin-top: 12px;
+            font-size: 11px;
+            color: #64748b;
+        }
+        .dev-footer strong {
+            color: #1e293b;
+            display: block;
+            margin-bottom: 3px;
+        }
+        .dev-footer p { margin: 2px 0; }
+        .dev-footer a {
+            color: #10b981;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .dev-footer a:hover { text-decoration: underline; }
+        /* LOGIN HOVER EFFECTS */
+        button:hover { background: #2563eb; transform: translateY(-1px); box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3); }
+        input:hover { border-color: #94a3b8; }
+        input:focus { border-color: #3b82f6; outline: none; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+        .switch-link a:hover { color: #2563eb; }
     </style>
 </head>
 <body>
 
     <div class="login-box">
         
-        <!-- DEVELOPER DETAILS (TOP) -->
-        <div class="dev-header">
-            <strong>Developed by: Sammtech Software Solutions</strong>
-            <p>"Your authentic partner."</p>
-            <p>📍 Goaso, Ahafo Region</p>
-            <p>📞 Call: <a href="tel:0554248882">0554248882</a></p>
-            <p>📱 WhatsApp: <a href="https://wa.me/233545104280" target="_blank">0545104280</a></p>
-        </div>
-
         <h2>School Portal 🏫</h2>
         
         <div th:if="${param.error}" class="error">Invalid username or password.</div>
@@ -147,6 +150,19 @@
             <div class="switch-link">
                 Already have an account? <a onclick="switchTab('login')">Sign In</a>
             </div>
+        </div>
+
+        <!-- LEGAL LINKS & DEVELOPER DETAILS (BOTTOM) -->
+        <div class="legal-links">
+            By logging in, you agree to our <br>
+            <a href="/terms">Terms of Service</a> &bull; <a href="/privacy">Privacy Policy</a>
+        </div>
+
+        <div class="dev-footer">
+            <strong>Developed by: Sammtech Software Solutions</strong>
+            <p>"Your authentic partner."</p>
+            <p>📍 Goaso, Ahafo Region</p>
+            <p>📞 Call: <a href="tel:0554248882">0554248882</a> | 📱 WhatsApp: <a href="https://wa.me/233545104280" target="_blank">0545104280</a></p>
         </div>
 
     </div>
