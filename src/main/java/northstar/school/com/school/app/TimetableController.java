@@ -19,6 +19,7 @@ public class TimetableController {
     @Autowired private SubjectRepository subjectRepo;
     @Autowired private TeacherRepository teacherRepo;
 
+    // 1. Show the Timetable Page
     @GetMapping("/timetable")
     public String showTimetable(Model model) {
         model.addAttribute("timetables", timetableRepo.findAll());
@@ -28,6 +29,7 @@ public class TimetableController {
         return "timetable";
     }
 
+    // 2. Handle Form Submission (Select OR Type new)
     @PostMapping("/addTimetable")
     public String addTimetable(@RequestParam String className, 
                                @RequestParam String subjectName, 
@@ -35,27 +37,39 @@ public class TimetableController {
                                @RequestParam List<String> days, 
                                @RequestParam String timeSlot) {
         
-        // 1. Find or Create the Classroom
+        // --- A. Handle the Class ---
+        // Check if the class exists in the database (case-insensitive)
         Optional<Classroom> existingClass = classroomRepo.findAll().stream()
                 .filter(c -> c.getClassName().equalsIgnoreCase(className.trim()))
                 .findFirst();
-        Classroom classroom = existingClass.orElseGet(() -> {
-            Classroom newClass = new Classroom();
-            newClass.setClassName(className.trim());
-            return classroomRepo.save(newClass);
-        });
+        
+        Classroom classroom;
+        if (existingClass.isPresent()) {
+            classroom = existingClass.get();
+        } else {
+            // If it doesn't exist, create a brand new one
+            classroom = new Classroom();
+            classroom.setClassName(className.trim());
+            classroomRepo.save(classroom);
+        }
 
-        // 2. Find or Create the Subject
+        // --- B. Handle the Subject ---
+        // Check if the subject exists in the database (case-insensitive)
         Optional<Subject> existingSubject = subjectRepo.findAll().stream()
                 .filter(s -> s.getSubjectName().equalsIgnoreCase(subjectName.trim()))
                 .findFirst();
-        Subject subject = existingSubject.orElseGet(() -> {
-            Subject newSubject = new Subject();
-            newSubject.setSubjectName(subjectName.trim());
-            return subjectRepo.save(newSubject);
-        });
+        
+        Subject subject;
+        if (existingSubject.isPresent()) {
+            subject = existingSubject.get();
+        } else {
+            // If it doesn't exist, create a brand new one
+            subject = new Subject();
+            subject.setSubjectName(subjectName.trim());
+            subjectRepo.save(subject);
+        }
 
-        // 3. Save the schedule for each selected day
+        // --- C. Save the Schedule for each selected day ---
         for (String day : days) {
             Timetable t = new Timetable();
             t.setClassroom(classroom);
@@ -65,9 +79,11 @@ public class TimetableController {
             t.setTimeSlot(timeSlot);
             timetableRepo.save(t);
         }
+
         return "redirect:/timetable";
     }
 
+    // 3. Delete a Timetable Entry
     @GetMapping("/deleteTimetable/{id}")
     public String deleteTimetable(@PathVariable Long id) {
         timetableRepo.deleteById(id);

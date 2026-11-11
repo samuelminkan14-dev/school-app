@@ -11,31 +11,63 @@
             <form action="/addTimetable" method="post">
                 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 15px;">
                     
-                    <!-- CLASS INPUT -->
+                    <!-- 1. CLASS INPUT -->
                     <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0;">
-                        <label style="font-weight: bold; font-size: 14px;">Class</label>
-                        <select name="classNameSelect" id="classNameSelect" style="width: 100%; margin-bottom: 5px;" onchange="toggleNewClass()">
-                            <option value="">-- Select Existing Class --</option>
-                            <option th:each="c : ${classrooms}" th:value="${c.className}" th:text="${c.className}"></option>
-                            <option value="NEW">➕ Add New Class...</option>
-                        </select>
-                        <!-- This input only shows if "Add New" is selected -->
-                        <input type="text" name="className" id="className" placeholder="Type New Class Name" style="width: 100%; display: none;">
+                        <label style="font-weight: bold; font-size: 14px;">Class (Select or Type New)</label>
+                        <input type="text" name="className" list="class-list" placeholder="e.g. Nursery 1 or SHS 2" required autocomplete="off" style="width: 100%;">
+                        <datalist id="class-list">
+                            <optgroup label="Nursery & Kindergarten">
+                                <option value="Nursery 1"></option>
+                                <option value="Nursery 2"></option>
+                                <option value="KG 1"></option>
+                                <option value="KG 2"></option>
+                            </optgroup>
+                            <optgroup label="Primary School">
+                                <option value="Basic 1"></option>
+                                <option value="Basic 2"></option>
+                                <option value="Basic 3"></option>
+                                <option value="Basic 4"></option>
+                                <option value="Basic 5"></option>
+                                <option value="Basic 6"></option>
+                            </optgroup>
+                            <optgroup label="Junior High School">
+                                <option value="JHS 1"></option>
+                                <option value="JHS 2"></option>
+                                <option value="JHS 3"></option>
+                            </optgroup>
+                            <optgroup label="Senior High School">
+                                <option value="SHS 1"></option>
+                                <option value="SHS 2"></option>
+                                <option value="SHS 3"></option>
+                            </optgroup>
+                            <!-- Load existing classes from database -->
+                            <option th:each="c : ${classrooms}" th:value="${c.className}"></option>
+                        </datalist>
                     </div>
 
-                    <!-- SUBJECT INPUT -->
+                    <!-- 2. SUBJECT INPUT (Fixed to allow typing) -->
                     <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0;">
-                        <label style="font-weight: bold; font-size: 14px;">Subject</label>
-                        <select name="subjectNameSelect" id="subjectNameSelect" style="width: 100%; margin-bottom: 5px;" onchange="toggleNewSubject()">
-                            <option value="">-- Select Existing Subject --</option>
-                            <option th:each="s : ${subjects}" th:value="${s.subjectName}" th:text="${s.subjectName}"></option>
-                            <option value="NEW">➕ Add New Subject...</option>
-                        </select>
-                        <!-- This input only shows if "Add New" is selected -->
-                        <input type="text" name="subjectName" id="subjectName" placeholder="Type New Subject Name" style="width: 100%; display: none;">
+                        <label style="font-weight: bold; font-size: 14px;">Subject (Select or Type New)</label>
+                        <input type="text" name="subjectName" list="subject-list" placeholder="e.g. Mathematics or Music" required autocomplete="off" style="width: 100%;">
+                        <datalist id="subject-list">
+                            <option value="Mathematics"></option>
+                            <option value="English Language"></option>
+                            <option value="Integrated Science"></option>
+                            <option value="Social Studies"></option>
+                            <option value="ICT"></option>
+                            <option value="Religious & Moral Education"></option>
+                            <option value="Ghanaian Language"></option>
+                            <option value="Creative Arts"></option>
+                            <option value="Physical Education"></option>
+                            <option value="French"></option>
+                            <option value="Career Technology"></option>
+                            <option value="Computing"></option>
+                            <!-- Load existing subjects from database -->
+                            <option th:each="s : ${subjects}" th:value="${s.subjectName}"></option>
+                        </datalist>
                     </div>
 
-                    <!-- TEACHER SELECT -->
+                    <!-- 3. TEACHER SELECT -->
                     <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0;">
                         <label style="font-weight: bold; font-size: 14px;">Teacher</label>
                         <select name="teacherId" required style="width: 100%;">
@@ -47,19 +79,19 @@
 
                 <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 15px;">
                     
-                    <!-- MULTIPLE DAYS -->
+                    <!-- 4. MULTIPLE DAYS -->
                     <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0;">
                         <label style="font-weight: bold; font-size: 14px; display: block; margin-bottom: 10px;">Select Days</label>
                         <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-                            <label><input type="checkbox" name="days" value="Monday"> Monday</label>
-                            <label><input type="checkbox" name="days" value="Tuesday"> Tuesday</label>
-                            <label><input type="checkbox" name="days" value="Wednesday"> Wednesday</label>
-                            <label><input type="checkbox" name="days" value="Thursday"> Thursday</label>
-                            <label><input type="checkbox" name="days" value="Friday"> Friday</label>
+                            <label style="cursor: pointer;"><input type="checkbox" name="days" value="Monday"> Monday</label>
+                            <label style="cursor: pointer;"><input type="checkbox" name="days" value="Tuesday"> Tuesday</label>
+                            <label style="cursor: pointer;"><input type="checkbox" name="days" value="Wednesday"> Wednesday</label>
+                            <label style="cursor: pointer;"><input type="checkbox" name="days" value="Thursday"> Thursday</label>
+                            <label style="cursor: pointer;"><input type="checkbox" name="days" value="Friday"> Friday</label>
                         </div>
                     </div>
 
-                    <!-- TIME -->
+                    <!-- 5. TIME -->
                     <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0;">
                         <label style="font-weight: bold; font-size: 14px;">Time Slot</label>
                         <input type="text" name="timeSlot" placeholder="e.g. 08:00 - 09:00" required style="width: 100%;">
@@ -98,55 +130,5 @@
             </tbody>
         </table>
     </div>
-
-    <!-- THIS JAVASCRIPT MAKES THE "ADD NEW" BUTTON WORK -->
-    <script>
-        function toggleNewClass() {
-            const select = document.getElementById('classNameSelect');
-            const input = document.getElementById('className');
-            if (select.value === 'NEW') {
-                input.style.display = 'block';
-                input.required = true;
-            } else {
-                input.style.display = 'none';
-                input.required = false;
-                input.value = '';
-            }
-        }
-
-        function toggleNewSubject() {
-            const select = document.getElementById('subjectNameSelect');
-            const input = document.getElementById('subjectName');
-            if (select.value === 'NEW') {
-                input.style.display = 'block';
-                input.required = true;
-            } else {
-                input.style.display = 'none';
-                input.required = false;
-                input.value = '';
-            }
-        }
-
-        // Handle form submission to ensure the right value is sent
-        document.querySelector('form').addEventListener('submit', function(e) {
-            const classSelect = document.getElementById('classNameSelect');
-            if (classSelect.value !== 'NEW' && classSelect.value !== '') {
-                const hidden = document.createElement('input');
-                hidden.type = 'hidden';
-                hidden.name = 'className';
-                hidden.value = classSelect.value;
-                this.appendChild(hidden);
-            }
-
-            const subSelect = document.getElementById('subjectNameSelect');
-            if (subSelect.value !== 'NEW' && subSelect.value !== '') {
-                const hidden = document.createElement('input');
-                hidden.type = 'hidden';
-                hidden.name = 'subjectName';
-                hidden.value = subSelect.value;
-                this.appendChild(hidden);
-            }
-        });
-    </script>
 </body>
 </html>

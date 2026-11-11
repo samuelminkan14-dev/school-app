@@ -7,26 +7,44 @@
 
         <div class="form-box" style="border-top: 5px solid #17a2b8;">
             <h3>Create New System User</h3>
-            <form action="/addUser" method="post" style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; gap: 10px; align-items: center;">
-                
-                <input type="text" name="username" placeholder="Username" required>
-                <input type="password" name="password" placeholder="Password" required>
-                
-                <select name="role" required id="roleSelect" onchange="toggleTeacherDropdown()">
-                    <option value="">Select Role</option>
-                    <option value="ADMIN">ADMIN</option>
-                    <option value="TEACHER">TEACHER</option>
-                    <option value="PARENT">PARENT</option>
-                    <option value="STUDENT">STUDENT</option>
-                </select>
-                
-                <!-- TEACHER DROPDOWN (Hidden by default) -->
-                <select name="linkedId" id="teacherSelect" style="display: none;">
-                    <option value="">-- Link to Teacher --</option>
-                    <option th:each="t : ${teachers}" th:value="${t.id}" th:text="${t.firstName + ' ' + t.lastName}"></option>
-                </select>
-                
-                <button type="submit" style="width: 100%;">Create User</button>
+            <form action="/addUser" method="post">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                    
+                    <div>
+                        <label style="font-weight: bold;">Username</label>
+                        <input type="text" name="username" placeholder="e.g. teacher1" required style="width: 100%;">
+                    </div>
+                    
+                    <div>
+                        <label style="font-weight: bold;">Password</label>
+                        <input type="password" name="password" placeholder="e.g. teacher123" required style="width: 100%;">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                    
+                    <div>
+                        <label style="font-weight: bold;">Role</label>
+                        <select name="role" required style="width: 100%;">
+                            <option value="">-- Select Role --</option>
+                            <option value="ADMIN">ADMIN</option>
+                            <option value="TEACHER">TEACHER</option>
+                            <option value="PARENT">PARENT</option>
+                            <option value="STUDENT">STUDENT</option>
+                        </select>
+                    </div>
+                    
+                    <!-- THIS IS THE LINK TO TEACHER DROPDOWN (Always Visible) -->
+                    <div>
+                        <label style="font-weight: bold;">Link to Teacher (Only for Teachers)</label>
+                        <select name="linkedId" style="width: 100%;">
+                            <option value="">-- Not a Teacher --</option>
+                            <option th:each="t : ${teachers}" th:value="${t.id}" th:text="${t.firstName + ' ' + t.lastName}"></option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" style="background: #17a2b8; width: 100%; padding: 12px; font-size: 16px;">Create User</button>
             </form>
         </div>
 
@@ -51,21 +69,5 @@
             </tbody>
         </table>
     </div>
-
-    <!-- JAVASCRIPT TO SHOW/HIDE THE TEACHER DROPDOWN -->
-    <script>
-        function toggleTeacherDropdown() {
-            const role = document.getElementById('roleSelect').value;
-            const teacherSelect = document.getElementById('teacherSelect');
-            
-            if (role === 'TEACHER') {
-                teacherSelect.style.display = 'block';
-                teacherSelect.required = true; // Make it required for teachers
-            } else {
-                teacherSelect.style.display = 'none';
-                teacherSelect.required = false;
-            }
-        }
-    </script>
 </body>
 </html>

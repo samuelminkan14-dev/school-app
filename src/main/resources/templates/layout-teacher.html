@@ -14,11 +14,15 @@
         .sidebar { width: 260px; background-color: var(--bg-dark); color: white; height: 100vh; position: fixed; left: 0; top: 0; transition: 0.3s; z-index: 1000; padding-top: 60px; display: flex; flex-direction: column; }
         .sidebar.closed { left: -260px; }
         .sidebar h2 { text-align: center; padding: 10px 0 20px 0; margin: 0; border-bottom: 1px solid var(--bg-darker); font-size: 18px; }
-        .sidebar-links { flex: 1; overflow-y: auto; }
+        
+        .sidebar-links { flex: 1; overflow-y: auto; padding-bottom: 20px; }
+        .sidebar-links::-webkit-scrollbar { width: 6px; }
+        .sidebar-links::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        
         .sidebar a { display: block; color: var(--text-light); padding: 15px 20px; text-decoration: none; font-size: 15px; border-left: 3px solid transparent; transition: 0.2s; }
         .sidebar a:hover { background-color: var(--bg-darker); color: white; }
 
-        .main-content { margin-left: 260px; width: calc(100% - 260px); padding: 80px 30px 30px 30px; transition: 0.3s; height: 100vh; overflow-y: auto; }
+        .main-content { margin-left: 260px; width: calc(100% - 260px); padding: 80px 30px 50px 30px; transition: 0.3s; height: 100vh; overflow-y: auto; }
         .main-content.full-width { margin-left: 0; width: 100%; }
 
         .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
@@ -37,23 +41,6 @@
             .main-content { margin-left: 0; width: 100%; padding-bottom: 80px; }
             .grid { display: flex !important; flex-direction: column !important; gap: 15px !important; }
         }
-        /* --- HOVER EFFECTS --- */
-        /* Table Row Hover */
-        tbody tr:hover { background-color: #f8fafc; transition: background-color 0.2s; cursor: default; }
-        
-        /* Card Hover (Lifts up slightly) */
-        .card, .form-box { transition: transform 0.2s, box-shadow 0.2s; }
-        .card:hover, .form-box:hover { transform: translateY(-2px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
-        
-        /* Button Hover */
-        button:hover { opacity: 0.9; transform: scale(1.02); transition: 0.2s; }
-        
-        /* Action Links Hover */
-        .action-link { transition: 0.2s; }
-        .action-link:hover { text-decoration: underline; opacity: 0.8; }
-        
-        /* Sidebar Link Hover (Already exists but making it smoother) */
-        .sidebar a { transition: all 0.2s ease-in-out; }
     </style>
 </head>
 <body>
