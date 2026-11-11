@@ -5,6 +5,15 @@
     <div layout:fragment="content">
         <h1>Teacher Management 👩‍🏫</h1>
 
+        <!-- ADD THIS TO SHOW MESSAGES -->
+        <div th:if="${successMessage}" style="background: #d4edda; color: #155724; padding: 15px; border-radius: 5px; margin-bottom: 20px; border-left: 5px solid #28a745;">
+            <strong>✅ Success!</strong> <span th:text="${successMessage}"></span>
+        </div>
+        <div th:if="${error}" style="background: #fee2e2; color: #991b1b; padding: 15px; border-radius: 5px; margin-bottom: 20px; border-left: 5px solid #ef4444;">
+            <strong>⚠️ Error!</strong> <span th:text="${error}"></span>
+        </div>
+
+        <!-- Rest of your code... -->
         <div class="form-box" style="border-top: 5px solid #dc3545; width: 300px;">
             <h3>Add New Teacher</h3>
             <form action="/addTeacher" method="post">
