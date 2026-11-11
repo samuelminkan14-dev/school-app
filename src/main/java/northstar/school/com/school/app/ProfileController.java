@@ -59,4 +59,26 @@ public class ProfileController {
                 .contentType(MediaType.parseMediaType(doc.getFileType()))
                 .body(doc.getData());
     }
+    @GetMapping("/student-id-card/{id}")
+    public String showIdCard(@PathVariable Long id, Model model) {
+        Student student = studentRepository.findById(id).orElseThrow();
+        model.addAttribute("student", student);
+        return "id-card";
+    }
+    @GetMapping("/student-qr/{id}")
+    public void generateQRCode(@PathVariable Long id, jakarta.servlet.http.HttpServletResponse response) throws Exception {
+        Student student = studentRepository.findById(id).orElseThrow();
+        
+        // The data to put in the QR code
+        String qrData = "Index: " + student.getIndexNumber() + " | Name: " + student.getFullName();
+        
+        // Generate the QR Code
+        com.google.zxing.qrcode.QRCodeWriter qrCodeWriter = new com.google.zxing.qrcode.QRCodeWriter();
+        com.google.zxing.common.BitMatrix bitMatrix = qrCodeWriter.encode(qrData, com.google.zxing.BarcodeFormat.QR_CODE, 250, 250);
+        
+        // Convert to image and send to the browser
+        java.awt.image.BufferedImage image = com.google.zxing.client.j2se.MatrixToImageWriter.toBufferedImage(bitMatrix);
+        response.setContentType("image/png");
+        javax.imageio.ImageIO.write(image, "png", response.getOutputStream());
+    }
 }

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Student ID Card</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f1f5f9; display: flex; flex-direction: column; align-items: center; padding: 40px; }
+        
+        /* Standard ID Card Size (approx 85.60 × 53.98 mm) */
+        .id-card {
+            width: 340px;
+            height: 540px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            overflow: hidden;
+            position: relative;
+            border: 1px solid #cbd5e1;
+        }
+
+        .card-header {
+            background: #1e293b;
+            color: white;
+            text-align: center;
+            padding: 20px 10px;
+            border-bottom: 5px solid #3b82f6;
+        }
+        .card-header h2 { margin: 0; font-size: 18px; text-transform: uppercase; letter-spacing: 1px; }
+        .card-header p { margin: 5px 0 0 0; font-size: 12px; color: #94a3b8; }
+
+        .photo-section {
+            text-align: center;
+            margin-top: -40px;
+        }
+        .photo-section img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid white;
+            background: #e2e8f0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .photo-section .placeholder {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 4px solid white;
+            background: #e2e8f0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: bold;
+            color: #64748b;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .student-details {
+            text-align: center;
+            padding: 15px 20px;
+        }
+        .student-details h3 { margin: 0; font-size: 20px; color: #1e293b; }
+        .student-details .index-number { font-size: 16px; font-weight: bold; color: #3b82f6; margin-top: 5px; }
+        
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            padding: 0 20px;
+            margin-top: 15px;
+            text-align: left;
+            font-size: 13px;
+            color: #475569;
+        }
+        .details-grid div strong { color: #1e293b; display: block; font-size: 11px; text-transform: uppercase; }
+
+        .qr-section {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            text-align: center;
+        }
+        .qr-section img { width: 80px; height: 80px; }
+        .qr-section p { margin: 5px 0 0 0; font-size: 10px; color: #94a3b8; text-transform: uppercase; }
+
+        /* Print Button */
+        .print-btn {
+            margin-top: 30px;
+            padding: 12px 30px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Hide button when printing */
+        @media print {
+            body { background: white; padding: 0; }
+            .id-card { box-shadow: none; border: 1px solid #ccc; margin: 0 auto; }
+            .print-btn { display: none; }
+            @page { margin: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="id-card">
+        <!-- School Header -->
+        <div class="card-header">
+            <h2 th:text="${globalSettings != null ? globalSettings.schoolName : 'School Name'}">School Name</h2>
+            <p>Student Identification Card</p>
+        </div>
+
+        <!-- Student Photo -->
+        <div class="photo-section">
+            <img th:if="${student.profilePicture != null}" th:src="${student.profilePicture}" alt="Student Photo">
+            <div th:if="${student.profilePicture == null}" class="placeholder">
+                <span th:text="${#strings.substring(student.firstName, 0, 1)}"></span>
+            </div>
+        </div>
+
+        <!-- Student Info -->
+        <div class="student-details">
+            <h3 th:text="${student.firstName + ' ' + student.lastName}">John Doe</h3>
+            <div class="index-number" th:text="${student.indexNumber}">5250261101</div>
+        </div>
+
+        <!-- Details Grid -->
+        <div class="details-grid">
+            <div>
+                <strong>Class</strong>
+                <span th:text="${student.classroom != null ? student.classroom.className : 'N/A'}">Basic 1</span>
+            </div>
+            <div>
+                <strong>Gender</strong>
+                <span th:text="${student.gender != null ? student.gender : 'N/A'}">M</span>
+            </div>
+            <div>
+                <strong>Valid Until</strong>
+                <span>December 2026</span>
+            </div>
+            <div>
+                <strong>School ID</strong>
+                <span>SCH-2026</span>
+            </div>
+        </div>
+
+        <!-- QR Code -->
+        <div class="qr-section">
+            <img th:src="@{/student-qr/{id}(id=${student.id})}" alt="QR Code">
+            <p>Scan to Verify</p>
+        </div>
+    </div>
+
+    <!-- Print Button -->
+    <button class="print-btn" onclick="window.print()">🖨️ Print ID Card</button>
+
+</body>
+</html>

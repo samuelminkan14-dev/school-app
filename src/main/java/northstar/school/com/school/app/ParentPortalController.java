@@ -64,29 +64,22 @@ public class ParentPortalController {
         return "parent-exams";
     }
 
-    // --- 3. PAYMENTS (SAFE VERSION) ---
     @GetMapping("/parent/payments")
     public String parentPayments(Model model) {
         Student student = getLoggedInStudent();
         if (student == null) return "redirect:/login";
         
         model.addAttribute("student", student);
+        model.addAttribute("payments", paymentRepository.findAll().stream()
+                .filter(p -> p.getStudent() != null && p.getStudent().getId().equals(student.getId())).toList());
         
-        // Safe list for payments
-        List<Payment> myPayments = paymentRepository.findAll().stream()
-                .filter(p -> p.getStudent() != null && p.getStudent().getId().equals(student.getId()))
-                .toList();
-        model.addAttribute("payments", myPayments);
-        
-        // Safe list for fees
-        List<Fee> availableFees = new ArrayList<>();
         if (student.getClassroom() != null) {
-            availableFees = feeRepository.findAll().stream()
+            model.addAttribute("classFees", feeRepository.findAll().stream()
                     .filter(f -> f.getClassroom() != null && f.getClassroom().getId().equals(student.getClassroom().getId()))
-                    .toList();
+                    .toList());
+        } else {
+            model.addAttribute("classFees", new java.util.ArrayList<>());
         }
-        model.addAttribute("classFees", availableFees);
-        
         return "parent-payments";
     }
 
