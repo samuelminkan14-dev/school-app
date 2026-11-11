@@ -12,6 +12,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -35,6 +36,7 @@ public class ParentPortalController {
                 .findFirst().orElse(null);
     }
 
+    // --- 1. OVERVIEW DASHBOARD ---
     @GetMapping("/parent/dashboard")
     public String parentDashboard(Model model, jakarta.servlet.http.HttpSession session) {
         Student student = getLoggedInStudent();
@@ -51,32 +53,44 @@ public class ParentPortalController {
         return "parent-dashboard";
     }
 
+    // --- 2. EXAM RESULTS ---
     @GetMapping("/parent/exams")
     public String parentExams(Model model) {
         Student student = getLoggedInStudent();
         if (student == null) return "redirect:/login";
+        
         model.addAttribute("student", student);
         model.addAttribute("marks", markRepository.findByStudentId(student.getId()));
         return "parent-exams";
     }
 
+    // --- 3. PAYMENTS (SAFE VERSION) ---
     @GetMapping("/parent/payments")
     public String parentPayments(Model model) {
         Student student = getLoggedInStudent();
         if (student == null) return "redirect:/login";
         
         model.addAttribute("student", student);
-        model.addAttribute("payments", paymentRepository.findAll().stream()
-                .filter(p -> p.getStudent().getId().equals(student.getId())).toList());
         
+        // Safe list for payments
+        List<Payment> myPayments = paymentRepository.findAll().stream()
+                .filter(p -> p.getStudent() != null && p.getStudent().getId().equals(student.getId()))
+                .toList();
+        model.addAttribute("payments", myPayments);
+        
+        // Safe list for fees
+        List<Fee> availableFees = new ArrayList<>();
         if (student.getClassroom() != null) {
-            model.addAttribute("classFees", feeRepository.findAll().stream()
+            availableFees = feeRepository.findAll().stream()
                     .filter(f -> f.getClassroom() != null && f.getClassroom().getId().equals(student.getClassroom().getId()))
-                    .toList());
+                    .toList();
         }
+        model.addAttribute("classFees", availableFees);
+        
         return "parent-payments";
     }
 
+    // --- 4. PAYMENT PROCESSING ---
     @PostMapping("/parent/pay-online")
     public String payOnline(@RequestParam Long studentId, @RequestParam Long feeId, @RequestParam Double amount, RedirectAttributes redirectAttributes) {
         Student student = studentRepository.findById(studentId).orElseThrow();
@@ -106,6 +120,7 @@ public class ParentPortalController {
         return "redirect:/parent/payments";
     }
 
+    // --- 5. FEEDBACK ---
     @GetMapping("/parent/feedback")
     public String parentFeedback(Model model) {
         Student student = getLoggedInStudent();

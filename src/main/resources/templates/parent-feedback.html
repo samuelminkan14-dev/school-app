@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout-parent}">
+<head><title>Feedback</title>
+<style>
+    input, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; }
+    button { padding: 15px; background: #8b5cf6; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; width: 100%; }
+</style>
+</head>
+<body>
+    <div layout:fragment="content">
+        <h1>Send Feedback 💬</h1>
+        <div th:if="${feedbackSuccess}" style="background: #d1fae5; color: #065f46; padding: 15px; border-radius: 5px; margin-bottom: 20px;" th:text="${feedbackSuccess}"></div>
+
+        <div class="card" style="border-top: 5px solid #8b5cf6; max-width: 600px;">
+            <p style="color: #64748b;">This message will only be seen by the School Admin.</p>
+            <form action="/parent/submit-feedback" method="post">
+                <label>Your Name</label>
+                <input type="text" name="parentName" th:value="${student.guardian != null ? student.guardian.fullName : ''}" required>
+                <label>Your Message</label>
+                <textarea name="message" rows="5" placeholder="Type your question or suggestion..." required></textarea>
+                <button type="submit">Send to Admin</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

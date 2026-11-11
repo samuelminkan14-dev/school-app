@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout-parent}">
+<head><title>Exam Results</title></head>
+<body>
+    <div layout:fragment="content">
+        <h1>Exam Results 📝</h1>
+        <div class="card">
+            <div class="table-responsive">
+                <table>
+                    <tr><th>Exam</th><th>Subject</th><th>Score</th><th>Status</th></tr>
+                    <tr th:each="m : ${marks}">
+                        <td th:text="${m.exam != null ? m.exam.examName : 'N/A'}">Midterm</td>
+                        <td th:text="${m.subject != null ? m.subject.subjectName : 'General'}">Math</td>
+                        <td style="font-weight: bold;" th:text="${m.score}">85</td>
+                        <td>
+                            <span th:if="${m.score >= 50}" style="color: #10b981; font-weight: bold;">Pass</span>
+                            <span th:if="${m.score < 50}" style="color: #ef4444; font-weight: bold;">Fail</span>
+                        </td>
+                    </tr>
+                    <tr th:if="${marks == null || marks.empty}">
+                        <td colspan="4" style="text-align: center; padding: 20px;">No exams recorded yet.</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
