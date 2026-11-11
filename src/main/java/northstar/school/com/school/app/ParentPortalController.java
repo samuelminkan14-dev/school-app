@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 public class ParentPortalController {
@@ -21,55 +21,68 @@ public class ParentPortalController {
     @Autowired private MarkRepository markRepository;
     @Autowired private AttendanceRepository attendanceRepository;
     @Autowired private PaymentRepository paymentRepository;
-    @Autowired private UserRepository userRepository;
     @Autowired private AnnouncementRepository announcementRepository;
     @Autowired private PaymentService paymentService;
     @Autowired private FeeRepository feeRepository;
     @Autowired private SchoolSettingRepository settingRepository;
+    @Autowired private FeedbackRepository feedbackRepository;
 
-    @GetMapping("/parent/dashboard")
-    public String parentDashboard(Model model) {
+    private Student getLoggedInStudent() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();
+        return studentRepository.findAll().stream()
+                .filter(s -> s.getIndexNumber() != null && s.getIndexNumber().equals(username))
+                .findFirst().orElse(null);
+    }
 
-        Optional<User> user = userRepository.findByUsername(username);
+    @GetMapping("/parent/dashboard")
+    public String parentDashboard(Model model, jakarta.servlet.http.HttpSession session) {
+        Student student = getLoggedInStudent();
+        if (student == null) return "redirect:/login?error=nostudent";
         
-        if (user.isPresent()) {
-            Optional<Student> studentOpt = studentRepository.findAll().stream()
-                    .filter(s -> s.getIndexNumber() != null && s.getIndexNumber().equals(username))
-                    .findFirst();
+        model.addAttribute("student", student);
+        model.addAttribute("attendanceRecords", attendanceRepository.findByStudentId(student.getId()));
+        
+        List<Announcement> announcements = announcementRepository.findAll();
+        announcements.sort((a, b) -> b.getDatePosted().compareTo(a.getDatePosted()));
+        model.addAttribute("announcements", announcements);
+        
+        session.removeAttribute("welcomeMessage");
+        return "parent-dashboard";
+    }
 
-            if (studentOpt.isPresent()) {
-                Student student = studentOpt.get();
-                model.addAttribute("student", student);
-                
-                List<Mark> marks = markRepository.findByStudentId(student.getId());
-                model.addAttribute("marks", marks);
-                
-                model.addAttribute("attendanceRecords", attendanceRepository.findByStudentId(student.getId()));
-                model.addAttribute("payments", paymentRepository.findAll().stream()
-                        .filter(p -> p.getStudent().getId().equals(student.getId())).toList());
+    @GetMapping("/parent/exams")
+    public String parentExams(Model model) {
+        Student student = getLoggedInStudent();
+        if (student == null) return "redirect:/login";
+        model.addAttribute("student", student);
+        model.addAttribute("marks", markRepository.findByStudentId(student.getId()));
+        return "parent-exams";
+    }
 
-                List<Announcement> announcements = announcementRepository.findAll();
-                announcements.sort((a, b) -> b.getDatePosted().compareTo(a.getDatePosted()));
-                model.addAttribute("announcements", announcements);
-
-                return "parent-dashboard";
-            }
+    @GetMapping("/parent/payments")
+    public String parentPayments(Model model) {
+        Student student = getLoggedInStudent();
+        if (student == null) return "redirect:/login";
+        
+        model.addAttribute("student", student);
+        model.addAttribute("payments", paymentRepository.findAll().stream()
+                .filter(p -> p.getStudent().getId().equals(student.getId())).toList());
+        
+        if (student.getClassroom() != null) {
+            model.addAttribute("classFees", feeRepository.findAll().stream()
+                    .filter(f -> f.getClassroom() != null && f.getClassroom().getId().equals(student.getClassroom().getId()))
+                    .toList());
         }
-        return "redirect:/login?error=nostudent";
+        return "parent-payments";
     }
 
     @PostMapping("/parent/pay-online")
-    public String payOnline(@RequestParam Long studentId, 
-                            @RequestParam Long feeId, 
-                            @RequestParam Double amount,
-                            RedirectAttributes redirectAttributes) {
+    public String payOnline(@RequestParam Long studentId, @RequestParam Long feeId, @RequestParam Double amount, RedirectAttributes redirectAttributes) {
         Student student = studentRepository.findById(studentId).orElseThrow();
         Fee fee = feeRepository.findById(feeId).orElseThrow();
         SchoolSetting settings = settingRepository.findById(1L).orElse(new SchoolSetting());
 
-        // Process MoMo Payment
         boolean success = paymentService.processPayment(amount, student.getGuardian().getPhone());
         
         if (success) {
@@ -78,20 +91,39 @@ public class ParentPortalController {
             payment.setFee(fee);
             payment.setAmountPaid(amount);
             payment.setPaymentDate(LocalDate.now());
-            payment.setMethod("Online (MoMo)");
+            payment.setMethod("Online (Paystack/MoMo)");
             payment.setReferenceNumber(paymentService.generateTransactionId());
             paymentRepository.save(payment);
 
             String email = student.getGuardian() != null ? student.getGuardian().getEmail() : null;
             paymentService.sendReceiptEmail(email, student.getFirstName(), amount, payment.getReferenceNumber(), settings.getCurrency());
 
-            redirectAttributes.addFlashAttribute("successMessage", "Online payment successful!");
-            
-            // Redirect to Receipt
+            redirectAttributes.addFlashAttribute("successMessage", "Payment successful!");
             return "redirect:/receipt/" + payment.getId();
         }
         
         redirectAttributes.addFlashAttribute("error", "Payment failed.");
-        return "redirect:/parent/dashboard";
+        return "redirect:/parent/payments";
+    }
+
+    @GetMapping("/parent/feedback")
+    public String parentFeedback(Model model) {
+        Student student = getLoggedInStudent();
+        if (student == null) return "redirect:/login";
+        model.addAttribute("student", student);
+        return "parent-feedback";
+    }
+
+    @PostMapping("/parent/submit-feedback")
+    public String submitFeedback(@RequestParam String parentName, @RequestParam String message, RedirectAttributes redirectAttributes) {
+        Feedback feedback = new Feedback();
+        feedback.setParentName(parentName);
+        feedback.setMessage(message);
+        feedback.setSubmittedAt(LocalDateTime.now());
+        feedback.setRead(false);
+        feedbackRepository.save(feedback);
+
+        redirectAttributes.addFlashAttribute("feedbackSuccess", "Your message has been sent to the Admin.");
+        return "redirect:/parent/feedback";
     }
 }

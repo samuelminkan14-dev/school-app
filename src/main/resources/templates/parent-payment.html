@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout-parent}">
+<head><title>Payments</title>
+<style>
+    input, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; }
+    button { padding: 15px; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; width: 100%; }
+</style>
+</head>
+<body>
+    <div layout:fragment="content">
+        <h1>Payments & Fees 💳</h1>
+        
+        <div th:if="${successMessage}" style="background: #d1fae5; color: #065f46; padding: 15px; border-radius: 5px; margin-bottom: 20px;" th:text="${successMessage}"></div>
+
+        <div class="card" style="border-top: 5px solid #10b981;">
+            <h3>Make a Payment</h3>
+            <form action="/parent/pay-online" method="post">
+                <input type="hidden" name="studentId" th:value="${student.id}">
+                <label>Select Fee:</label>
+                <select name="feeId" required>
+                    <option value="">-- Choose Fee --</option>
+                    <option th:each="f : ${classFees}" th:value="${f.id}" th:text="${f.feeName + ' - GHS ' + f.amount}"></option>
+                </select>
+                <label>Amount (GHS):</label>
+                <input type="number" step="0.01" name="amount" placeholder="Enter amount" required>
+                <button type="submit">Pay Now via Paystack / MoMo</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h3>Payment History</h3>
+            <div class="table-responsive">
+                <table>
+                    <tr><th>Date</th><th>Fee</th><th>Amount</th><th>Receipt</th></tr>
+                    <tr th:each="p : ${payments}">
+                        <td th:text="${p.paymentDate}">2026-11-10</td>
+                        <td th:text="${p.fee.feeName}">Tuition</td>
+                        <td style="color: #10b981; font-weight: bold;" th:text="'GHS ' + ${p.amountPaid}">GHS 500</td>
+                        <td><a th:href="@{/receipt/{id}(id=${p.id})}" style="color: #3b82f6; font-weight: bold; text-decoration: none;">View Receipt</a></td>
+                    </tr>
+                    <tr th:if="${payments == null || payments.empty}">
+                        <td colspan="4" style="text-align: center; padding: 20px;">No payments yet.</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
