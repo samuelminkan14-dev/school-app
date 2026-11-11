@@ -7,18 +7,20 @@
 
         <div class="form-box" style="border-top: 5px solid #17a2b8;">
             <h3>Create New System User</h3>
-            <form action="/addUser" method="post" style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; gap: 10px;">
+            <form action="/addUser" method="post" style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; gap: 10px; align-items: center;">
+                
                 <input type="text" name="username" placeholder="Username" required>
                 <input type="password" name="password" placeholder="Password" required>
                 
-                <select name="role" required id="roleSelect">
+                <select name="role" required id="roleSelect" onchange="toggleTeacherDropdown()">
                     <option value="">Select Role</option>
                     <option value="ADMIN">ADMIN</option>
                     <option value="TEACHER">TEACHER</option>
                     <option value="PARENT">PARENT</option>
+                    <option value="STUDENT">STUDENT</option>
                 </select>
                 
-                <!-- Teacher Dropdown (Only shows when TEACHER is selected) -->
+                <!-- TEACHER DROPDOWN (Hidden by default) -->
                 <select name="linkedId" id="teacherSelect" style="display: none;">
                     <option value="">-- Link to Teacher --</option>
                     <option th:each="t : ${teachers}" th:value="${t.id}" th:text="${t.firstName + ' ' + t.lastName}"></option>
@@ -50,16 +52,20 @@
         </table>
     </div>
 
+    <!-- JAVASCRIPT TO SHOW/HIDE THE TEACHER DROPDOWN -->
     <script>
-        // Show the Teacher dropdown only when "TEACHER" is selected
-        document.getElementById('roleSelect').addEventListener('change', function() {
+        function toggleTeacherDropdown() {
+            const role = document.getElementById('roleSelect').value;
             const teacherSelect = document.getElementById('teacherSelect');
-            if (this.value === 'TEACHER') {
+            
+            if (role === 'TEACHER') {
                 teacherSelect.style.display = 'block';
+                teacherSelect.required = true; // Make it required for teachers
             } else {
                 teacherSelect.style.display = 'none';
+                teacherSelect.required = false;
             }
-        });
+        }
     </script>
 </body>
 </html>
