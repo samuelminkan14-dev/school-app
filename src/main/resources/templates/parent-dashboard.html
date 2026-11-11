@@ -1,133 +1,41 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Parent Portal</title>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #f1f5f9; }
-        .top-bar { background: #1e293b; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
-        .top-bar h1 { margin: 0; font-size: 20px; }
-        .logout-btn { background: #ef4444; color: white; padding: 8px 15px; text-decoration: none; border-radius: 5px; font-weight: bold; }
-        
-        .container { padding: 30px; max-width: 1100px; margin: 0 auto; }
-        .welcome-card { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 30px; border-left: 5px solid #3b82f6; }
-        
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px; }
-        .card { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .card h3 { margin-top: 0; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; color: #333; }
-        
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { border-bottom: 1px solid #e2e8f0; padding: 10px; text-align: left; }
-        th { background-color: #f8fafc; font-size: 13px; color: #64748b; text-transform: uppercase; }
-        
-        .badge { padding: 5px 10px; border-radius: 20px; font-weight: bold; font-size: 14px; }
-        .badge-pass { background: #d1fae5; color: #065f46; }
-        .badge-fail { background: #fee2e2; color: #991b1b; }
-        
-        .money { color: #10b981; font-weight: bold; }
-    </style>
-</head>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout-parent}">
+<head><title>Overview</title></head>
 <body>
-
-    <!-- Parent Top Bar -->
-    <div class="top-bar">
-        <h1>🏫 Parent Portal</h1>
-        <a href="/logout" class="logout-btn">Logout</a>
-    </div>
-
-    <div class="container">
+    <div layout:fragment="content">
         
-        <!-- ANNOUNCEMENTS BANNER (Added at the top) -->
-        <div th:if="${announcements != null && !announcements.empty}" style="margin-bottom: 20px;">
-            <div th:each="a : ${announcements}" 
-                 style="background: #fff3cd; border-left: 5px solid #ffc107; padding: 15px; border-radius: 5px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;"
-                 th:style="${a.priority == 'High' ? 'background: #f8d7da; border-left-color: #dc3545;' : (a.priority == 'Normal' ? 'background: #fff3cd; border-left-color: #ffc107;' : 'background: #d1fae5; border-left-color: #10b981;')}">
-                
-                <div>
-                    <strong style="color: #333;" th:text="${a.title}"></strong>: 
-                    <span style="color: #444;" th:text="${a.message}"></span>
-                </div>
-                <small style="color: #666;" th:text="${a.datePosted}"></small>
+        <!-- WELCOME MESSAGE -->
+        <div th:if="${session.welcomeMessage != null}" style="background: #dbeafe; color: #1e40af; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-weight: bold; border-left: 5px solid #3b82f6;">
+            <span th:text="${session.welcomeMessage}"></span>
+        </div>
+
+        <h1>Welcome, Parent of <span th:text="${student.firstName}"></span>!</h1>
+        
+        <div th:if="${announcements != null && !announcements.empty}" style="margin: 20px 0;">
+            <div th:each="a : ${announcements}" style="background: #fff3cd; border-left: 5px solid #ffc107; padding: 15px; border-radius: 5px; margin-bottom: 10px;">
+                <strong style="color: #856404;" th:text="${a.title}"></strong>: <span style="color: #856404;" th:text="${a.message}"></span>
             </div>
         </div>
 
-        <!-- Welcome Message -->
-        <div class="welcome-card">
-            <h2 style="margin-top: 0; color: #1e293b;">Welcome, Parent of <span th:text="${student.firstName + ' ' + student.lastName}" style="color: #3b82f6;"></span>!</h2>
-            <p style="margin-bottom: 0;">
-                <strong>Index Number:</strong> <span th:text="${student.indexNumber}"></span> | 
-                <strong>Class:</strong> <span th:text="${student.classroom != null ? student.classroom.className : 'N/A'}"></span>
-            </p>
-        </div>
-
-        <div class="grid">
-            <!-- Marks Card -->
-            <div class="card">
-                <h3>📝 Exam Results</h3>
-                <table>
-                    <thead>
-                        <tr><th>Exam</th><th>Score</th><th>Status</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="m : ${marks}">
-                            <td th:text="${m.exam.examName}">Midterm</td>
-                            <td style="font-weight: bold;" th:text="${m.score}">85</td>
-                            <td>
-                                <span th:if="${m.score >= 50}" class="badge badge-pass">Pass</span>
-                                <span th:if="${m.score < 50}" class="badge badge-fail">Fail</span>
-                            </td>
-                        </tr>
-                        <tr th:if="${marks == null || marks.empty}">
-                            <td colspan="3" style="text-align: center; color: #888;">No exams recorded yet.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Attendance Card -->
-            <div class="card">
-                <h3>✅ Recent Attendance</h3>
-                <table>
-                    <thead>
-                        <tr><th>Date</th><th>Status</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="a : ${attendanceRecords}">
-                            <td th:text="${a.date}">2026-11-09</td>
-                            <td>
-                                <span th:if="${a.status == 'Present'}" style="color: #10b981; font-weight: bold;">Present</span>
-                                <span th:if="${a.status == 'Absent'}" style="color: #ef4444; font-weight: bold;">Absent</span>
-                                <span th:if="${a.status == 'Late'}" style="color: #f59e0b; font-weight: bold;">Late</span>
-                            </td>
-                        </tr>
-                        <tr th:if="${attendanceRecords == null || attendanceRecords.empty}">
-                            <td colspan="2" style="text-align: center; color: #888;">No attendance recorded yet.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Payments Card (Full Width) -->
         <div class="card">
-            <h3>💰 Fee Payments</h3>
-            <table>
-                <thead>
-                    <tr><th>Date</th><th>Fee Type</th><th>Amount Paid</th></tr>
-                </thead>
-                <tbody>
-                    <tr th:each="p : ${payments}">
-                        <td th:text="${p.paymentDate}">2026-11-09</td>
-                        <td th:text="${p.fee.feeName}">Term 1 Tuition</td>
-                        <td class="money" th:text="'$' + ${p.amountPaid}">$500.00</td>
+            <h3>✅ Recent Attendance</h3>
+            <div class="table-responsive">
+                <table>
+                    <tr><th>Date</th><th>Status</th></tr>
+                    <tr th:each="a : ${attendanceRecords}">
+                        <td th:text="${a.date}">2026-11-10</td>
+                        <td>
+                            <span th:if="${a.status == 'Present'}" style="color: #10b981; font-weight: bold;">Present</span>
+                            <span th:if="${a.status == 'Absent'}" style="color: #ef4444; font-weight: bold;">Absent</span>
+                            <span th:if="${a.status == 'Late'}" style="color: #f59e0b; font-weight: bold;">Late</span>
+                        </td>
                     </tr>
-                    <tr th:if="${payments == null || payments.empty}">
-                        <td colspan="3" style="text-align: center; color: #888;">No payments recorded yet.</td>
+                    <tr th:if="${attendanceRecords == null || attendanceRecords.empty}">
+                        <td colspan="2" style="text-align: center; padding: 20px;">No attendance recorded yet.</td>
                     </tr>
-                </tbody>
-            </table>
+                </table>
+            </div>
         </div>
     </div>
-
 </body>
 </html>
