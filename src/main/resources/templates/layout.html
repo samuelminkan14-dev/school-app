@@ -6,12 +6,21 @@
     <title>School Management System</title>
     <style>
         :root { --bg-dark: #1e293b; --bg-darker: #0f172a; --text-light: #94a3b8; --text-white: #f8fafc; --accent: #3b82f6; --danger: #ef4444; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #f1f5f9; display: flex; height: 100vh; overflow: hidden; }
+        
+        /* BODY FIXED TO PREVENT DOUBLE SCROLLBARS */
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            background-color: #f1f5f9; 
+            display: flex; 
+            height: 100vh; 
+            overflow: hidden; 
+        }
         
         .hamburger { position: fixed; top: 15px; left: 15px; font-size: 24px; cursor: pointer; background: var(--bg-dark); color: white; padding: 8px 12px; border-radius: 8px; z-index: 2000; border: none; }
         .top-logout { position: fixed; top: 15px; right: 20px; background: var(--danger); color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: bold; z-index: 2000; }
 
-        /* SIDEBAR - SCROLLABLE */
+        /* SIDEBAR */
         .sidebar { 
             width: 260px; 
             background-color: var(--bg-dark); 
@@ -29,7 +38,7 @@
         .sidebar.closed { left: -260px; }
         .sidebar h2 { text-align: center; padding: 10px 0 20px 0; margin: 0; border-bottom: 1px solid var(--bg-darker); font-size: 18px; flex-shrink: 0; }
         
-        /* THIS MAKES THE LINKS SCROLLABLE */
+        /* SIDEBAR LINKS SCROLLABLE */
         .sidebar-links { 
             flex: 1; 
             overflow-y: auto; 
@@ -49,14 +58,14 @@
         .dropdown-btn:after { content: '\25BC'; font-size: 10px; transition: 0.3s; }
         .dropdown-btn.active:after { content: '\25B2'; }
 
-        /* MAIN CONTENT - SCROLLABLE */
+        /* MAIN CONTENT - THE CRITICAL SCROLL FIX */
         .main-content { 
             margin-left: 260px; 
             width: calc(100% - 260px); 
             padding: 80px 30px 50px 30px; 
             transition: 0.3s; 
             height: 100vh; 
-            overflow-y: auto; 
+            overflow-y: auto; /* <--- THIS MAKES THE DASHBOARD SCROLL */
         }
         .main-content.full-width { margin-left: 0; width: 100%; }
 
@@ -77,6 +86,7 @@
 
         .floating-back { position: fixed; bottom: 30px; right: 30px; padding: 12px 24px; background: #64748b; color: white; border: none; border-radius: 50px; font-size: 15px; font-weight: bold; cursor: pointer; z-index: 1000; }
 
+        /* MOBILE RESPONSIVENESS */
         @media (max-width: 768px) {
             .sidebar { left: -260px; }
             .sidebar.mobile-open { left: 0; }
