@@ -70,16 +70,25 @@ public class ParentPortalController {
         if (student == null) return "redirect:/login";
         
         model.addAttribute("student", student);
-        model.addAttribute("payments", paymentRepository.findAll().stream()
-                .filter(p -> p.getStudent() != null && p.getStudent().getId().equals(student.getId())).toList());
         
+        // Fetch all payments for this student
+        List<Payment> myPayments = paymentRepository.findAll().stream()
+                .filter(p -> p.getStudent() != null && p.getStudent().getId().equals(student.getId()))
+                .toList();
+        model.addAttribute("payments", myPayments);
+        
+        // Fetch all fees for this student's class
+        List<Fee> availableFees = new java.util.ArrayList<>();
         if (student.getClassroom() != null) {
-            model.addAttribute("classFees", feeRepository.findAll().stream()
+            availableFees = feeRepository.findAll().stream()
                     .filter(f -> f.getClassroom() != null && f.getClassroom().getId().equals(student.getClassroom().getId()))
-                    .toList());
-        } else {
-            model.addAttribute("classFees", new java.util.ArrayList<>());
+                    .toList();
         }
+        model.addAttribute("classFees", availableFees);
+        
+        // Also pass global settings for currency
+        model.addAttribute("globalSettings", settingRepository.findById(1L).orElse(new SchoolSetting()));
+        
         return "parent-payments";
     }
 
