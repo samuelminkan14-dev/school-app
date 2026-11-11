@@ -14,8 +14,8 @@ public class TeacherController {
 
     @Autowired private TeacherRepository teacherRepo;
     @Autowired private ClassroomRepository classroomRepo;
-    @Autowired private UserRepository userRepo; // Need this to check for linked users
-    @Autowired private TimetableRepository timetableRepo; // Need this to check for assignments
+    @Autowired private UserRepository userRepo;
+    @Autowired private TimetableRepository timetableRepo;
 
     @GetMapping("/teachers")
     public String listTeachers(Model model) {
@@ -45,16 +45,14 @@ public class TeacherController {
     @GetMapping("/deleteTeacher/{id}")
     public String deleteTeacher(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
-            // Check if teacher has a User account linked
             boolean hasUser = userRepo.findAll().stream()
                     .anyMatch(u -> u.getLinkedId() != null && u.getLinkedId().equals(id));
             
-            // Check if teacher is assigned to a timetable
             boolean hasTimetable = timetableRepo.findAll().stream()
                     .anyMatch(t -> t.getTeacher() != null && t.getTeacher().getId().equals(id));
 
             if (hasUser || hasTimetable) {
-                redirectAttributes.addFlashAttribute("error", "Cannot delete teacher. They are linked to a User account or assigned to a Timetable. Please remove those links first.");
+                redirectAttributes.addFlashAttribute("error", "Cannot delete teacher. They are linked to a User account or assigned to a Timetable.");
                 return "redirect:/teachers";
             }
 
