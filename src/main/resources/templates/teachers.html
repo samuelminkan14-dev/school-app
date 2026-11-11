@@ -1,11 +1,24 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
-<head><title>Teachers</title></head>
+<head>
+    <title>Teachers</title>
+    <style>
+        .tab-buttons { display: flex; gap: 15px; margin-bottom: 20px; }
+        .tab-btn { padding: 12px 25px; font-size: 16px; font-weight: bold; border: none; border-radius: 5px; cursor: pointer; background: #e2e8f0; color: #475569; transition: 0.3s; }
+        .tab-btn:hover { background: #cbd5e1; }
+        .tab-btn.active { background: #dc3545; color: white; }
+        .tab-btn.active-list { background: #3b82f6; color: white; }
+        
+        .section-content { display: none; }
+        .section-content.active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
 <body>
     <div layout:fragment="content">
         <h1>Teacher Management 👩‍🏫</h1>
 
-        <!-- ADD THIS TO SHOW MESSAGES -->
+        <!-- ERROR & SUCCESS MESSAGES -->
         <div th:if="${successMessage}" style="background: #d4edda; color: #155724; padding: 15px; border-radius: 5px; margin-bottom: 20px; border-left: 5px solid #28a745;">
             <strong>✅ Success!</strong> <span th:text="${successMessage}"></span>
         </div>
@@ -13,38 +26,81 @@
             <strong>⚠️ Error!</strong> <span th:text="${error}"></span>
         </div>
 
-        <!-- Rest of your code... -->
-        <div class="form-box" style="border-top: 5px solid #dc3545; width: 300px;">
-            <h3>Add New Teacher</h3>
-            <form action="/addTeacher" method="post">
-                <input type="text" name="firstName" placeholder="First Name" required>
-                <input type="text" name="lastName" placeholder="Last Name" required>
-                <input type="text" name="subject" placeholder="Subject (e.g. Math)" required>
-                <button type="submit" style="background: #dc3545; width: 100%;">Save Teacher</button>
-            </form>
+        <!-- TAB BUTTONS -->
+        <div class="tab-buttons">
+            <button type="button" class="tab-btn active" id="btn-add" onclick="switchTab('add')">➕ Add New Teacher</button>
+            <button type="button" class="tab-btn" id="btn-list" onclick="switchTab('list')">📋 View Teacher List</button>
         </div>
 
-        <h2>Teacher List</h2>
-        <table>
-            <thead>
-                <tr><th>ID</th><th>First Name</th><th>Last Name</th><th>Subject</th><th>Actions</th></tr>
-            </thead>
-            <tbody>
-                <tr th:each="teacher : ${teachers}">
-                    <td th:text="${teacher.id}">1</td>
-                    <td th:text="${teacher.firstName}">John</td>
-                    <td th:text="${teacher.lastName}">Doe</td>
-                    <td th:text="${teacher.subject}">Math</td>
-                    <td>
-                        <a th:href="@{/editTeacher/{id}(id=${teacher.id})}" class="action-link edit">Edit</a>
-                        <a th:href="@{/deleteTeacher/{id}(id=${teacher.id})}" class="action-link delete" onclick="return confirm('Delete this teacher?');">Delete</a>
-                    </td>
-                </tr>
-                <tr th:if="${teachers == null || teachers.empty}">
-                    <td colspan="5" style="text-align: center; padding: 20px;">No teachers added yet.</td>
-                </tr>
-            </tbody>
-        </table>
+        <!-- 1. ADD TEACHER FORM -->
+        <div id="section-add" class="section-content active">
+            <div class="form-box" style="border-top: 5px solid #dc3545; max-width: 500px;">
+                <h3>Add New Teacher</h3>
+                <form action="/addTeacher" method="post">
+                    <input type="text" name="firstName" placeholder="First Name" required>
+                    <input type="text" name="lastName" placeholder="Last Name" required>
+                    <input type="text" name="subject" placeholder="Subject (e.g. Math)" required>
+                    
+                    <select name="classroomId" required>
+                        <option value="">-- Assign to Class --</option>
+                        <option th:each="c : ${classrooms}" th:value="${c.id}" th:text="${c.className}"></option>
+                    </select>
+                    
+                    <button type="submit" style="background: #dc3545; width: 100%;">Save Teacher</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- 2. TEACHER LIST -->
+        <div id="section-list" class="section-content">
+            <h2>Teacher List</h2>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Subject</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="teacher : ${teachers}">
+                            <td th:text="${teacher.id}">1</td>
+                            <td th:text="${teacher.firstName}">John</td>
+                            <td th:text="${teacher.lastName}">Doe</td>
+                            <td th:text="${teacher.subject}">Math</td>
+                            <td style="white-space: nowrap;">
+                                <a th:href="@{/deleteTeacher/{id}(id=${teacher.id})}" class="action-link delete" onclick="return confirm('Delete this teacher?');">Delete</a>
+                            </td>
+                        </tr>
+                        <tr th:if="${teachers == null || teachers.empty}">
+                            <td colspan="5" style="text-align: center; padding: 20px;">No teachers added yet.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
+
+    <!-- JAVASCRIPT FOR TABS -->
+    <script>
+        function switchTab(tabName) {
+            document.querySelectorAll('.section-content').forEach(el => el.classList.remove('active'));
+            const btnAdd = document.getElementById('btn-add');
+            const btnList = document.getElementById('btn-list');
+            btnAdd.classList.remove('active');
+            btnList.classList.remove('active-list');
+
+            if (tabName === 'add') {
+                document.getElementById('section-add').classList.add('active');
+                btnAdd.classList.add('active');
+            } else {
+                document.getElementById('section-list').classList.add('active');
+                btnList.classList.add('active-list');
+            }
+        }
+    </script>
 </body>
 </html>
