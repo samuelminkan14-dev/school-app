@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.LocalDate;
+
 @Controller
 public class AdminController {
 
@@ -30,13 +32,9 @@ public class AdminController {
         
         User user = new User();
         user.setUsername(username);
-        
-        // 🔴 THIS IS THE FIX: Encrypt the password before saving it!
         user.setPassword(passwordEncoder.encode(password));
-        
         user.setRole(role);
         
-        // If the role is TEACHER, link the account to the Teacher profile
         if ("TEACHER".equals(role) && linkedId != null) {
             user.setLinkedId(linkedId);
         }
