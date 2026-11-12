@@ -16,15 +16,28 @@ public class PayrollController {
     @Autowired private ExpenseRepository expenseRepo;
     @Autowired private TeacherRepository teacherRepo;
 
+    // 1. Show Payroll History & Expenses
     @GetMapping("/payroll")
     public String showPayroll(Model model) {
         model.addAttribute("payrolls", payrollRepo.findAll());
         model.addAttribute("expenses", expenseRepo.findAll());
-        model.addAttribute("teachers", teacherRepo.findAll());
         return "payroll";
     }
 
-    // 1. Manually Generate Payslip for one Teacher
+    // 2. Show Generate Payslip Form
+    @GetMapping("/payroll/add-payslip")
+    public String showAddPayslipForm(Model model) {
+        model.addAttribute("teachers", teacherRepo.findAll());
+        return "payroll-add-payslip";
+    }
+
+    // 3. Show Add Expense Form
+    @GetMapping("/payroll/add-expense")
+    public String showAddExpenseForm() {
+        return "payroll-add-expense";
+    }
+
+    // 4. Handle Payslip Submission
     @PostMapping("/generatePayslip")
     public String generatePayslip(@RequestParam Long teacherId,
                                   @RequestParam String month,
@@ -45,35 +58,7 @@ public class PayrollController {
         return "redirect:/payroll";
     }
 
-    // 2. AUTOMATED PAYROLL: Generate for ALL teachers at once
-    @PostMapping("/generateMonthlyPayroll")
-    public String generateMonthlyPayroll() {
-        LocalDate now = LocalDate.now();
-        String currentMonth = now.getMonth().toString() + " " + now.getYear();
-
-        // Check if payroll already exists for this month to avoid duplicates
-        boolean exists = payrollRepo.findAll().stream().anyMatch(p -> p.getMonth().equals(currentMonth));
-        if (exists) {
-            return "redirect:/payroll?alreadyGenerated";
-        }
-
-        // Loop through every teacher and create a payslip
-        for (Teacher t : teacherRepo.findAll()) {
-            Double baseSalary = 2000.0; // Default base salary
-
-            Payroll p = new Payroll();
-            p.setTeacher(t);
-            p.setMonth(currentMonth);
-            p.setBasicSalary(baseSalary);
-            p.setAllowances(0.0);
-            p.setDeductions(0.0);
-            p.setPaymentDate(LocalDate.now());
-            payrollRepo.save(p);
-        }
-        return "redirect:/payroll?generated";
-    }
-
-    // 3. Record School Expense
+    // 5. Handle Expense Submission
     @PostMapping("/addExpense")
     public String addExpense(@RequestParam String description, @RequestParam Double amount) {
         Expense expense = new Expense();

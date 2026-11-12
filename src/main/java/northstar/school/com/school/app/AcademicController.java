@@ -10,24 +10,31 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class AcademicController {
 
-    @Autowired
-    private ClassroomRepository classroomRepository;
-
-    @Autowired
-    private SubjectRepository subjectRepository;
+    @Autowired private ClassroomRepository classroomRepo;
+    @Autowired private SubjectRepository subjectRepo;
 
     @GetMapping("/academics")
     public String showAcademics(Model model) {
-        model.addAttribute("classes", classroomRepository.findAll());
-        model.addAttribute("subjects", subjectRepository.findAll());
+        model.addAttribute("classes", classroomRepo.findAll());
+        model.addAttribute("subjects", subjectRepo.findAll());
         return "academics";
+    }
+
+    @GetMapping("/academics/add-class")
+    public String showAddClass() {
+        return "academics-add-class";
+    }
+
+    @GetMapping("/academics/add-subject")
+    public String showAddSubject() {
+        return "academics-add-subject";
     }
 
     @PostMapping("/addClass")
     public String addClass(@RequestParam String className) {
         Classroom classroom = new Classroom();
         classroom.setClassName(className);
-        classroomRepository.save(classroom);
+        classroomRepo.save(classroom);
         return "redirect:/academics";
     }
 
@@ -35,7 +42,7 @@ public class AcademicController {
     public String addSubject(@RequestParam String subjectName) {
         Subject subject = new Subject();
         subject.setSubjectName(subjectName);
-        subjectRepository.save(subject);
+        subjectRepo.save(subject);
         return "redirect:/academics";
     }
 }

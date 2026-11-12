@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head><title>Generate Payslip</title></head>
+<body>
+    <div layout:fragment="content">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h1>Generate Teacher Payslip ➕</h1>
+            <a href="/payroll" style="background: #64748b; color: white; padding: 12px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">⬅ Back to Payroll</a>
+        </div>
+        <div class="form-box" style="max-width: 600px; margin: 0 auto; border-top: 5px solid #20c997;">
+            <form action="/generatePayslip" method="post">
+                <label style="font-weight: bold;">Select Teacher</label>
+                <select name="teacherId" required>
+                    <option value="">-- Select Teacher --</option>
+                    <option th:each="t : ${teachers}" th:value="${t.id}" th:text="${t.firstName + ' ' + t.lastName}"></option>
+                </select>
+                <label style="font-weight: bold; margin-top: 10px; display: block;">Month</label>
+                <input type="text" name="month" placeholder="e.g. Nov 2026" required>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 10px;">
+                    <div>
+                        <label style="font-weight: bold;">Basic Salary</label>
+                        <input type="number" step="0.01" name="basicSalary" required>
+                    </div>
+                    <div>
+                        <label style="font-weight: bold;">Allowances</label>
+                        <input type="number" step="0.01" name="allowances" required>
+                    </div>
+                    <div>
+                        <label style="font-weight: bold;">Deductions</label>
+                        <input type="number" step="0.01" name="deductions" required>
+                    </div>
+                </div>
+                <button type="submit" style="background: #20c997; width: 100%; margin-top: 20px; padding: 15px;">Generate Payslip</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

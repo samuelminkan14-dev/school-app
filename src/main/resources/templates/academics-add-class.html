@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head><title>Add Class</title></head>
+<body>
+    <div layout:fragment="content">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h1>Add New Class ➕</h1>
+            <a href="/academics" style="background: #64748b; color: white; padding: 12px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">⬅ Back to Academics</a>
+        </div>
+        <div class="form-box" style="max-width: 500px; margin: 0 auto; border-top: 5px solid #17a2b8;">
+            <form action="/addClass" method="post">
+                <label style="font-weight: bold;">Class Name</label>
+                <input type="text" name="className" placeholder="e.g. Grade 5A" required>
+                <button type="submit" style="background: #17a2b8; width: 100%; margin-top: 20px; padding: 15px;">Save Class</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

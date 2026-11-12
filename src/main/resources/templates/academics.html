@@ -3,49 +3,45 @@
 <head><title>Academics</title></head>
 <body>
     <div layout:fragment="content">
-        <h1>Academic Setup 📚</h1>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h1>Academic Setup 📚</h1>
+            <div style="display: flex; gap: 10px;">
+                <a href="/academics/add-class" style="background: #17a2b8; color: white; padding: 12px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">➕ Add Class</a>
+                <a href="/academics/add-subject" style="background: #ffc107; color: #333; padding: 12px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">➕ Add Subject</a>
+            </div>
+        </div>
 
-        <div style="display: flex; gap: 40px;">
+        <div style="display: flex; gap: 20px;">
+            <!-- Classes List -->
             <div style="flex: 1;">
-                <div class="form-box" style="border-top: 5px solid #17a2b8;">
-                    <h3>Add Class</h3>
-                    <form action="/addClass" method="post">
-                        <input type="text" name="className" placeholder="Class Name (e.g. Grade 5A)" required>
-                        <button type="submit" style="background: #17a2b8; width: 100%;">Save Class</button>
-                    </form>
+                <h2>Classes</h2>
+                <div class="table-responsive">
+                    <table>
+                        <thead><tr><th>ID</th><th>Class Name</th></tr></thead>
+                        <tbody>
+                            <tr th:each="c : ${classes}">
+                                <td th:text="${c.id}">1</td>
+                                <td th:text="${c.className}">Basic 1</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-                <h3>Classes</h3>
-                <table>
-                    <tr><th>ID</th><th>Class Name</th></tr>
-                    <tr th:each="c : ${classes}">
-                        <td th:text="${c.id}">1</td>
-                        <td th:text="${c.className}">Grade 5A</td>
-                    </tr>
-                    <tr th:if="${classes == null || classes.empty}">
-                        <td colspan="2" style="text-align: center;">No classes yet.</td>
-                    </tr>
-                </table>
             </div>
 
+            <!-- Subjects List -->
             <div style="flex: 1;">
-                <div class="form-box" style="border-top: 5px solid #ffc107;">
-                    <h3>Add Subject</h3>
-                    <form action="/addSubject" method="post">
-                        <input type="text" name="subjectName" placeholder="Subject Name (e.g. Math)" required>
-                        <button type="submit" style="background: #ffc107; color: #333; width: 100%;">Save Subject</button>
-                    </form>
+                <h2>Subjects</h2>
+                <div class="table-responsive">
+                    <table>
+                        <thead><tr><th>ID</th><th>Subject Name</th></tr></thead>
+                        <tbody>
+                            <tr th:each="s : ${subjects}">
+                                <td th:text="${s.id}">1</td>
+                                <td th:text="${s.subjectName}">Math</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-                <h3>Subjects</h3>
-                <table>
-                    <tr><th>ID</th><th>Subject Name</th></tr>
-                    <tr th:each="s : ${subjects}">
-                        <td th:text="${s.id}">1</td>
-                        <td th:text="${s.subjectName}">Math</td>
-                    </tr>
-                    <tr th:if="${subjects == null || subjects.empty}">
-                        <td colspan="2" style="text-align: center;">No subjects yet.</td>
-                    </tr>
-                </table>
             </div>
         </div>
     </div>
