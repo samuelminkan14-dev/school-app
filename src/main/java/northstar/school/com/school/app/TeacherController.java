@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 @Controller
 public class TeacherController {
@@ -48,15 +47,23 @@ public class TeacherController {
         String month = String.format("%02d", now.getMonthValue()); // e.g. 11
         String day = String.format("%02d", now.getDayOfMonth());   // e.g. 12
         
-        // Format: 5052 + YY + MM + DD
-        String staffId = "5052" + year + month + day;
+        // 1. Create the base ID (5052 + YY + MM + DD)
+        String baseStaffId = "5052" + year + month + day;
         
-        // In case two teachers are hired on the same day, add a random digit to the end
-        if (teacherRepo.findAll().stream().anyMatch(t -> staffId.equals(t.getStaffId()))) {
-            staffId = staffId + String.format("%02d", teacherRepo.count() + 1);
+        // 2. Check if this base ID already exists in the database
+        boolean exists = teacherRepo.findAll().stream()
+                .anyMatch(t -> baseStaffId.equals(t.getStaffId()));
+        
+        // 3. Determine the final ID
+        String finalStaffId;
+        if (exists) {
+            // If it exists, add the total count of teachers + 1 to the end to make it unique
+            finalStaffId = baseStaffId + String.format("%02d", teacherRepo.count() + 1);
+        } else {
+            finalStaffId = baseStaffId;
         }
         
-        teacher.setStaffId(staffId);
+        teacher.setStaffId(finalStaffId);
         
         if (classroomId != null) {
             teacher.setClassroom(classroomRepo.findById(classroomId).orElse(null));
