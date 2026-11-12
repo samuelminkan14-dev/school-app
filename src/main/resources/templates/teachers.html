@@ -1,36 +1,13 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
-<head>
-    <title>Teachers</title>
-    <style>
-        /* Tab Buttons */
-        .tab-buttons { display: flex; gap: 15px; margin-bottom: 20px; justify-content: center; }
-        .tab-btn { 
-            padding: 12px 25px; font-size: 16px; font-weight: bold; 
-            border: 1px solid #cbd5e1; border-radius: 8px; cursor: pointer; 
-            background: white; color: #475569; transition: 0.3s; 
-        }
-        .tab-btn:hover { background: #f1f5f9; }
-        .tab-btn.active { background: #dc3545; color: white; border-color: #dc3545; box-shadow: 0 4px 6px rgba(220, 53, 69, 0.3); }
-        .tab-btn.active-list { background: #3b82f6; color: white; border-color: #3b82f6; box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3); }
-        
-        /* Sections */
-        .section-content { display: none; }
-        .section-content.active { display: block; animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Compact Form */
-        .form-container { max-width: 500px; margin: 0 auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-top: 5px solid #dc3545; }
-        .form-container input, .form-container select { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; }
-        .form-container button { width: 100%; padding: 12px; background: #dc3545; color: white; border: none; border-radius: 6px; font-weight: bold; font-size: 16px; cursor: pointer; }
-        .form-container button:hover { background: #c82333; }
-    </style>
-</head>
+<head><title>Teachers</title></head>
 <body>
     <div layout:fragment="content">
-        <h1 style="text-align: center;">Teacher Management 👩‍🏫</h1>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h1>Teacher List 👩‍🏫</h1>
+            <a href="/teachers/add" style="background: #dc3545; color: white; padding: 12px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">➕ Add New Teacher</a>
+        </div>
 
-        <!-- Messages -->
         <div th:if="${successMessage}" style="background: #d4edda; color: #155724; padding: 15px; border-radius: 5px; margin-bottom: 20px; border-left: 5px solid #28a745;">
             <strong>✅ Success!</strong> <span th:text="${successMessage}"></span>
         </div>
@@ -38,77 +15,35 @@
             <strong>⚠️ Error!</strong> <span th:text="${error}"></span>
         </div>
 
-        <!-- TABS -->
-        <div class="tab-buttons">
-            <button type="button" class="tab-btn active" id="btn-add" onclick="switchTab('add')">➕ Add New Teacher</button>
-            <button type="button" class="tab-btn" id="btn-list" onclick="switchTab('list')">📋 View Teacher List</button>
-        </div>
-
-        <!-- ADD FORM -->
-        <div id="section-add" class="section-content active">
-            <div class="form-container">
-                <h3 style="margin-top: 0; margin-bottom: 20px; text-align: center;">Add New Teacher</h3>
-                <form action="/addTeacher" method="post">
-                    <input type="text" name="firstName" placeholder="First Name" required>
-                    <input type="text" name="lastName" placeholder="Last Name" required>
-                    <input type="text" name="subject" placeholder="Subject (e.g. Math)" required>
-                    
-                    <select name="classroomId" required>
-                        <option value="">-- Assign to Class --</option>
-                        <option th:each="c : ${classrooms}" th:value="${c.id}" th:text="${c.className}"></option>
-                    </select>
-                    
-                    <button type="submit">Save Teacher</button>
-                </form>
-            </div>
-        </div>
-
-        <!-- LIST -->
-        <div id="section-list" class="section-content">
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>First Name</th>
-                            <th>Last Name</th>
-                            <th>Subject</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="teacher : ${teachers}">
-                            <td th:text="${teacher.id}">1</td>
-                            <td th:text="${teacher.firstName}">John</td>
-                            <td th:text="${teacher.lastName}">Doe</td>
-                            <td th:text="${teacher.subject}">Math</td>
-                            <td>
-                                <a th:href="@{/deleteTeacher/{id}(id=${teacher.id})}" class="action-link delete" onclick="return confirm('Delete this teacher?');">Delete</a>
-                            </td>
-                        </tr>
-                        <tr th:if="${teachers == null || teachers.empty}">
-                            <td colspan="5" style="text-align: center; padding: 20px;">No teachers added yet.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Subject</th>
+                        <th>Class</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="teacher : ${teachers}">
+                        <td th:text="${teacher.id}">1</td>
+                        <td th:text="${teacher.firstName}">John</td>
+                        <td th:text="${teacher.lastName}">Doe</td>
+                        <td th:text="${teacher.subject}">Math</td>
+                        <td th:text="${teacher.classroom != null ? teacher.classroom.className : 'N/A'}">Basic 1</td>
+                        <td>
+                            <a th:href="@{/deleteTeacher/{id}(id=${teacher.id})}" class="action-link delete" onclick="return confirm('Delete this teacher?');">Delete</a>
+                        </td>
+                    </tr>
+                    <tr th:if="${teachers == null || teachers.empty}">
+                        <td colspan="6" style="text-align: center; padding: 20px;">No teachers added yet.</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
-
-    <script>
-        function switchTab(tabName) {
-            document.querySelectorAll('.section-content').forEach(el => el.classList.remove('active'));
-            document.getElementById('btn-add').classList.remove('active');
-            document.getElementById('btn-list').classList.remove('active-list');
-
-            if (tabName === 'add') {
-                document.getElementById('section-add').classList.add('active');
-                document.getElementById('btn-add').classList.add('active');
-            } else {
-                document.getElementById('section-list').classList.add('active');
-                document.getElementById('btn-list').classList.add('active-list');
-            }
-        }
-    </script>
 </body>
 </html>

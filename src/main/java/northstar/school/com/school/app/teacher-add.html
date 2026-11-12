@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head><title>Add Teacher</title></head>
+<body>
+    <div layout:fragment="content">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h1>Add New Teacher ➕</h1>
+            <a href="/teachers" style="background: #64748b; color: white; padding: 12px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">⬅ Back to List</a>
+        </div>
+
+        <div class="form-box" style="max-width: 500px; margin: 0 auto; border-top: 5px solid #dc3545;">
+            <form action="/addTeacher" method="post">
+                <label style="font-weight: bold;">First Name</label>
+                <input type="text" name="firstName" placeholder="First Name" required>
+                
+                <label style="font-weight: bold;">Last Name</label>
+                <input type="text" name="lastName" placeholder="Last Name" required>
+                
+                <label style="font-weight: bold;">Subject</label>
+                <input type="text" name="subject" placeholder="Subject (e.g. Math)" required>
+                
+                <label style="font-weight: bold;">Assign to Class</label>
+                <select name="classroomId" required>
+                    <option value="">-- Select Class --</option>
+                    <option th:each="c : ${classrooms}" th:value="${c.id}" th:text="${c.className}"></option>
+                </select>
+                
+                <button type="submit" style="background: #dc3545; width: 100%; padding: 15px; font-size: 16px;">Save Teacher</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

@@ -17,11 +17,18 @@ public class TeacherController {
     @Autowired private UserRepository userRepo;
     @Autowired private TimetableRepository timetableRepo;
 
+    // 1. Show the Teacher List Page
     @GetMapping("/teachers")
     public String listTeachers(Model model) {
         model.addAttribute("teachers", teacherRepo.findAll());
-        model.addAttribute("classrooms", classroomRepo.findAll());
         return "teachers";
+    }
+
+    // 2. Show the Add Teacher Form Page
+    @GetMapping("/teachers/add")
+    public String showAddTeacherForm(Model model) {
+        model.addAttribute("classrooms", classroomRepo.findAll());
+        return "teacher-add";
     }
 
     @PostMapping("/addTeacher")
