@@ -1,25 +1,6 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
-<head><title>Teachers</title></head>
-<body>
-    <div layout:fragment="content">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h1>Teacher List 👩‍🏫</h1>
-            <a href="/teachers/add" style="background: #dc3545; color: white; padding: 12px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">➕ Add New Teacher</a>
-        </div>
-
-        <div th:if="${successMessage}" style="background: #d4edda; color: #155724; padding: 15px; border-radius: 5px; margin-bottom: 20px; border-left: 5px solid #28a745;">
-            <strong>✅ Success!</strong> <span th:text="${successMessage}"></span>
-        </div>
-        <div th:if="${error}" style="background: #fee2e2; color: #991b1b; padding: 15px; border-radius: 5px; margin-bottom: 20px; border-left: 5px solid #ef4444;">
-            <strong>⚠️ Error!</strong> <span th:text="${error}"></span>
-        </div>
-
-        <div class="table-responsive">
-            <table>
                 <thead>
                     <tr>
-                        <th>ID</th>
+                        <th>Staff ID</th> <!-- ADDED THIS -->
                         <th>First Name</th>
                         <th>Last Name</th>
                         <th>Subject</th>
@@ -29,7 +10,7 @@
                 </thead>
                 <tbody>
                     <tr th:each="teacher : ${teachers}">
-                        <td th:text="${teacher.id}">1</td>
+                        <td style="font-weight: bold; color: #3b82f6;" th:text="${teacher.staffId}">5052261112</td> <!-- ADDED THIS -->
                         <td th:text="${teacher.firstName}">John</td>
                         <td th:text="${teacher.lastName}">Doe</td>
                         <td th:text="${teacher.subject}">Math</td>
@@ -42,8 +23,3 @@
                         <td colspan="6" style="text-align: center; padding: 20px;">No teachers added yet.</td>
                     </tr>
                 </tbody>
-            </table>
-        </div>
-    </div>
-</body>
-</html>

@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 @Controller
 public class TeacherController {
 
@@ -17,14 +20,12 @@ public class TeacherController {
     @Autowired private UserRepository userRepo;
     @Autowired private TimetableRepository timetableRepo;
 
-    // 1. Show the Teacher List Page
     @GetMapping("/teachers")
     public String listTeachers(Model model) {
         model.addAttribute("teachers", teacherRepo.findAll());
         return "teachers";
     }
 
-    // 2. Show the Add Teacher Form Page
     @GetMapping("/teachers/add")
     public String showAddTeacherForm(Model model) {
         model.addAttribute("classrooms", classroomRepo.findAll());
@@ -40,6 +41,22 @@ public class TeacherController {
         teacher.setFirstName(firstName);
         teacher.setLastName(lastName);
         teacher.setSubject(subject);
+        
+        // --- GENERATE UNIQUE STAFF ID ---
+        LocalDate now = LocalDate.now();
+        String year = String.format("%02d", now.getYear() % 100); // e.g. 26
+        String month = String.format("%02d", now.getMonthValue()); // e.g. 11
+        String day = String.format("%02d", now.getDayOfMonth());   // e.g. 12
+        
+        // Format: 5052 + YY + MM + DD
+        String staffId = "5052" + year + month + day;
+        
+        // In case two teachers are hired on the same day, add a random digit to the end
+        if (teacherRepo.findAll().stream().anyMatch(t -> staffId.equals(t.getStaffId()))) {
+            staffId = staffId + String.format("%02d", teacherRepo.count() + 1);
+        }
+        
+        teacher.setStaffId(staffId);
         
         if (classroomId != null) {
             teacher.setClassroom(classroomRepo.findById(classroomId).orElse(null));
