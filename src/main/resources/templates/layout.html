@@ -6,44 +6,15 @@
     <title>School Management System</title>
     <style>
         :root { --bg-dark: #1e293b; --bg-darker: #0f172a; --text-light: #94a3b8; --text-white: #f8fafc; --accent: #3b82f6; --danger: #ef4444; }
-        
-        /* BODY FIXED TO PREVENT DOUBLE SCROLLBARS */
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            margin: 0; 
-            background-color: #f1f5f9; 
-            display: flex; 
-            height: 100vh; 
-            overflow: hidden; 
-        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #f1f5f9; display: flex; height: 100vh; overflow: hidden; }
         
         .hamburger { position: fixed; top: 15px; left: 15px; font-size: 24px; cursor: pointer; background: var(--bg-dark); color: white; padding: 8px 12px; border-radius: 8px; z-index: 2000; border: none; }
         .top-logout { position: fixed; top: 15px; right: 20px; background: var(--danger); color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: bold; z-index: 2000; }
 
-        /* SIDEBAR */
-        .sidebar { 
-            width: 260px; 
-            background-color: var(--bg-dark); 
-            color: white; 
-            height: 100vh; 
-            position: fixed; 
-            left: 0; 
-            top: 0; 
-            transition: 0.3s; 
-            z-index: 1000; 
-            padding-top: 60px; 
-            display: flex; 
-            flex-direction: column; 
-        }
+        .sidebar { width: 260px; background-color: var(--bg-dark); color: white; height: 100vh; position: fixed; left: 0; top: 0; transition: 0.3s; z-index: 1000; padding-top: 60px; display: flex; flex-direction: column; }
         .sidebar.closed { left: -260px; }
         .sidebar h2 { text-align: center; padding: 10px 0 20px 0; margin: 0; border-bottom: 1px solid var(--bg-darker); font-size: 18px; flex-shrink: 0; }
-        
-        /* SIDEBAR LINKS SCROLLABLE */
-        .sidebar-links { 
-            flex: 1; 
-            overflow-y: auto; 
-            padding-bottom: 20px;
-        }
+        .sidebar-links { flex: 1; overflow-y: auto; padding-bottom: 20px; }
         .sidebar-links::-webkit-scrollbar { width: 6px; }
         .sidebar-links::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
 
@@ -58,18 +29,9 @@
         .dropdown-btn:after { content: '\25BC'; font-size: 10px; transition: 0.3s; }
         .dropdown-btn.active:after { content: '\25B2'; }
 
-        /* MAIN CONTENT - THE CRITICAL SCROLL FIX */
-        .main-content { 
-            margin-left: 260px; 
-            width: calc(100% - 260px); 
-            padding: 80px 30px 50px 30px; 
-            transition: 0.3s; 
-            height: 100vh; 
-            overflow-y: auto; /* <--- THIS MAKES THE DASHBOARD SCROLL */
-        }
+        .main-content { margin-left: 260px; width: calc(100% - 260px); padding: 80px 30px 50px 30px; transition: 0.3s; height: 100vh; overflow-y: auto; }
         .main-content.full-width { margin-left: 0; width: 100%; }
 
-        /* TABLES & FORMS */
         .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
         table { border-collapse: collapse; width: 100%; margin-top: 20px; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-radius: 8px; overflow: hidden; }
         th, td { border-bottom: 1px solid #e2e8f0; padding: 15px; text-align: left; }
@@ -86,13 +48,10 @@
 
         .floating-back { position: fixed; bottom: 30px; right: 30px; padding: 12px 24px; background: #64748b; color: white; border: none; border-radius: 50px; font-size: 15px; font-weight: bold; cursor: pointer; z-index: 1000; }
 
-        /* MOBILE RESPONSIVENESS */
         @media (max-width: 768px) {
             .sidebar { left: -260px; }
             .sidebar.mobile-open { left: 0; }
             .main-content { margin-left: 0; width: 100%; padding-top: 80px; padding-bottom: 80px; }
-            .form-grid, .grid, .dashboard-cards, .columns-container { display: flex !important; flex-direction: column !important; gap: 15px !important; }
-            .full-width-btn, .submit-btn { width: 100%; }
             .top-logout { padding: 8px 12px; font-size: 14px; }
         }
     </style>
@@ -105,6 +64,7 @@
         <h2>🏫 <span th:text="${globalSettings != null ? globalSettings.schoolName : 'SCHOOL MS'}">SCHOOL MS</span></h2>
         <div class="sidebar-links" id="sidebarLinks">
             <a href="/dashboard">📊 Dashboard</a>
+            
             <button class="dropdown-btn">👨‍💼 ADMIN</button>
             <div class="dropdown-container">
                 <a href="/users">🔐 Users</a>
@@ -116,13 +76,16 @@
                 <a href="/academics">📚 Academics</a>
                 <a href="/settings">⚙️ Settings</a>
                 <a href="/admin/feedback">💬 Parent Feedback</a>
+                <a href="/audit-logs">📋 Audit Logs</a>
             </div>
+            
             <button class="dropdown-btn">💰 ACCOUNTANT</button>
             <div class="dropdown-container">
                 <a href="/finance">💵 Fees & Payments</a>
                 <a href="/payroll">💸 Payroll</a>
                 <a href="/store">🛒 Store</a>
             </div>
+            
             <button class="dropdown-btn">🏫 MANAGE SCHOOL</button>
             <div class="dropdown-container">
                 <a href="/attendance">✅ Attendance</a>
@@ -135,6 +98,7 @@
                 <a href="/pickup">🚸 Pickup Log</a>
                 <a href="/bulk-import">📁 Bulk Import</a>
             </div>
+            
             <button class="dropdown-btn">🗂️ HR</button>
             <div class="dropdown-container">
                 <a href="/hr">📋 Leave Requests</a>

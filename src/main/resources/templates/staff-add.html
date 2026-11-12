@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head><title>Add Staff</title></head>
+<body>
+    <div layout:fragment="content">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h1>Add New Staff ➕</h1>
+            <a href="/staff" style="background: #64748b; color: white; padding: 12px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">⬅ Back to List</a>
+        </div>
+        <div class="form-box" style="max-width: 500px; margin: 0 auto; border-top: 5px solid #6c757d;">
+            <form action="/addStaff" method="post">
+                <label style="font-weight: bold;">Full Name</label>
+                <input type="text" name="fullName" required>
+                <label style="font-weight: bold; margin-top: 10px; display: block;">Role</label>
+                <select name="role" required>
+                    <option value="Cook">Cook</option>
+                    <option value="Driver">Driver</option>
+                    <option value="Security">Security</option>
+                    <option value="Cleaner">Cleaner</option>
+                </select>
+                <label style="font-weight: bold; margin-top: 10px; display: block;">Phone</label>
+                <input type="text" name="phone" required>
+                <label style="font-weight: bold; margin-top: 10px; display: block;">Salary (GHS)</label>
+                <input type="number" step="0.01" name="salary" required>
+                <button type="submit" style="background: #6c757d; width: 100%; margin-top: 20px; padding: 15px;">Save Staff</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

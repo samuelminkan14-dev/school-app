@@ -13,20 +13,21 @@ import java.time.LocalDate;
 @Controller
 public class StaffController {
 
-    @Autowired
-    private StaffRepository staffRepo;
+    @Autowired private StaffRepository staffRepo;
 
     @GetMapping("/staff")
-    public String showStaffPage(Model model) {
+    public String showStaffList(Model model) {
         model.addAttribute("staffList", staffRepo.findAll());
         return "staff";
     }
 
+    @GetMapping("/staff/add")
+    public String showAddStaffForm() {
+        return "staff-add";
+    }
+
     @PostMapping("/addStaff")
-    public String addStaff(@RequestParam String fullName, 
-                           @RequestParam String role, 
-                           @RequestParam String phone, 
-                           @RequestParam Double salary) {
+    public String addStaff(@RequestParam String fullName, @RequestParam String role, @RequestParam String phone, @RequestParam Double salary) {
         Staff staff = new Staff();
         staff.setFullName(fullName);
         staff.setRole(role);
@@ -34,7 +35,6 @@ public class StaffController {
         staff.setSalary(salary);
         staff.setHireDate(LocalDate.now());
         staffRepo.save(staff);
-        
         return "redirect:/staff";
     }
 

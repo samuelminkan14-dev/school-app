@@ -3,14 +3,13 @@
 <head><title>Students</title></head>
 <body>
     <div layout:fragment="content">
-        <h1>Student Directory 🎓</h1>
-
-        <div th:if="${successMessage}" style="background: #d4edda; color: #155724; padding: 15px; border-radius: 5px; margin-bottom: 20px; border-left: 5px solid #28a745;">
-            <strong>✅ Success!</strong> <span th:text="${successMessage}"></span>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h1>Student Directory 🎓</h1>
+            <a href="/enroll" style="background: #28a745; color: white; padding: 12px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">➕ Enroll New Student</a>
         </div>
 
-        <div style="margin-bottom: 20px;">
-            <a href="/enroll" style="background: #28a745; color: white; padding: 12px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">➕ Enroll New Student</a>
+        <div th:if="${successMessage}" style="background: #d4edda; color: #155724; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+            <strong>✅ Success!</strong> <span th:text="${successMessage}"></span>
         </div>
 
         <div class="table-responsive">
@@ -32,19 +31,12 @@
                         <td>
                             <span th:if="${student.guardian != null}">
                                 <strong th:text="${student.guardian.fullName}">Parent Name</strong><br>
-                                <small th:text="${student.guardian.phone} + ' | ' + ${student.guardian.location}">Phone | Loc</small>
+                                <small th:text="${student.guardian.phone}">Phone</small>
                             </span>
-                            <span th:if="${student.guardian == null}" style="color: #dc3545;">None</span>
                         </td>
-                        <td style="white-space: nowrap;">
-                            <a th:href="@{/student-profile/{id}(id=${student.id})}" class="action-link" style="color: #8b5cf6; margin-right: 10px;">Profile</a>
-                            <a th:href="@{/editStudent/{id}(id=${student.id})}" class="action-link edit">Update</a>
-                            <a th:href="@{/report-card/{id}(id=${student.id})}" class="action-link report">Report</a>
+                        <td>
                             <a th:href="@{/deleteStudent/{id}(id=${student.id})}" class="action-link delete" onclick="return confirm('Delete this student?');">Delete</a>
                         </td>
-                    </tr>
-                    <tr th:if="${students == null || students.empty}">
-                        <td colspan="5" style="text-align: center; padding: 20px;">No students added yet. Click "Enroll New Student" to start.</td>
                     </tr>
                 </tbody>
             </table>

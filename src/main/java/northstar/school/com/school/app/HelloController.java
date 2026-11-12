@@ -1,8 +1,6 @@
 package northstar.school.com.school.app;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,20 +24,22 @@ public class HelloController {
     @Autowired private GuardianRepository guardianRepository;
     @Autowired private UserRepository userRepository;
     @Autowired private PasswordEncoder passwordEncoder;
-    @Autowired private AuditLogRepository auditRepo; // NEW: Audit Log
 
+    // 1. SHOW STUDENT LIST
     @GetMapping("/")
     public String showDirectory(Model model) {
         model.addAttribute("students", studentRepository.findAll());
         return "hello";
     }
 
+    // 2. SHOW ENROLL FORM
     @GetMapping("/enroll")
     public String showEnrollForm(Model model) {
         model.addAttribute("classrooms", classroomRepository.findAll());
         return "enroll";
     }
 
+    // 3. HANDLE ENROLLMENT
     @PostMapping("/addStudent")
     public String addStudent(@RequestParam String firstName, 
                              @RequestParam String lastName, 
@@ -47,34 +47,34 @@ public class HelloController {
                              @RequestParam String guardianName,
                              @RequestParam String guardianPhone,
                              @RequestParam String guardianLocation,
-                             @RequestParam("profilePic") MultipartFile profilePic,
+                             @RequestParam(value = "profilePic", required = false) MultipartFile profilePic,
                              RedirectAttributes redirectAttributes) {
         
         Student student = new Student();
         student.setFirstName(firstName);
         student.setLastName(lastName);
 
+        // Handle Profile Picture
         if (profilePic != null && !profilePic.isEmpty()) {
-            String contentType = profilePic.getContentType();
-            if (contentType == null || !contentType.startsWith("image/")) {
-                redirectAttributes.addFlashAttribute("error", "Security Error: Only image files are allowed.");
-                return "redirect:/enroll";
-            }
-            if (profilePic.getSize() > 2 * 1024 * 1024) {
-                redirectAttributes.addFlashAttribute("error", "Security Error: File size must be less than 2MB.");
-                return "redirect:/enroll";
-            }
             try {
                 String base64Image = Base64.getEncoder().encodeToString(profilePic.getBytes());
-                student.setProfilePicture("data:" + contentType + ";base64," + base64Image);
+                student.setProfilePicture("data:" + profilePic.getContentType() + ";base64," + base64Image);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
 
-        Classroom classroom = getOrCreateClassroom(className);
+        // Handle Class
+        Optional<Classroom> existingClass = classroomRepository.findAll().stream()
+                .filter(c -> c.getClassName().equalsIgnoreCase(className.trim())).findFirst();
+        Classroom classroom = existingClass.orElseGet(() -> {
+            Classroom newClass = new Classroom();
+            newClass.setClassName(className.trim());
+            return classroomRepository.save(newClass);
+        });
         student.setClassroom(classroom);
 
+        // Generate Index Number
         LocalDate now = LocalDate.now();
         String year = String.format("%02d", now.getYear() % 100);
         String month = String.format("%02d", now.getMonthValue());
@@ -86,6 +86,7 @@ public class HelloController {
         student.setAdmissionDate(LocalDate.now());
         studentRepository.save(student);
 
+        // Create Guardian
         Guardian guardian = new Guardian();
         guardian.setFullName(guardianName);
         guardian.setPhone(guardianPhone);
@@ -93,15 +94,13 @@ public class HelloController {
         guardian.setStudent(student);
         guardianRepository.save(guardian);
 
+        // Create Parent User
         User parentUser = new User();
         parentUser.setUsername(indexNumber);
         parentUser.setPassword(passwordEncoder.encode("parent123"));
         parentUser.setRole("PARENT");
+        parentUser.setLinkedId(student.getId());
         userRepository.save(parentUser);
-
-        // --- AUDIT LOG: CREATE ---
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        auditRepo.save(new AuditLog(auth.getName(), "CREATE", "Enrolled student: " + firstName + " " + lastName + " (ID: " + indexNumber + ")"));
 
         redirectAttributes.addFlashAttribute("successMessage", 
             "Student enrolled! Index Number: " + indexNumber + ". Parent login created with password: parent123");
@@ -111,54 +110,7 @@ public class HelloController {
 
     @GetMapping("/deleteStudent/{id}")
     public String deleteStudent(@PathVariable Long id) {
-        Student student = studentRepository.findById(id).orElseThrow();
-        
-        // --- AUDIT LOG: DELETE ---
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        auditRepo.save(new AuditLog(auth.getName(), "DELETE", "Deleted student: " + student.getFirstName() + " " + student.getLastName()));
-
         studentRepository.deleteById(id);
         return "redirect:/";
-    }
-
-    // ... (Keep your editStudent, updateStudent, and getOrCreateClassroom methods exactly as they are)
-    
-    @GetMapping("/editStudent/{id}")
-    public String showEditForm(@PathVariable Long id, Model model) {
-        Optional<Student> student = studentRepository.findById(id);
-        if (student.isPresent()) {
-            model.addAttribute("student", student.get());
-            model.addAttribute("classrooms", classroomRepository.findAll());
-            return "edit-student";
-        }
-        return "redirect:/";
-    }
-
-    @PostMapping("/updateStudent")
-    public String updateStudent(@RequestParam Long id,
-                                @RequestParam String firstName, 
-                                @RequestParam String lastName, 
-                                @RequestParam String className) {
-        Student student = studentRepository.findById(id).orElseThrow();
-        student.setFirstName(firstName);
-        student.setLastName(lastName);
-        Classroom classroom = getOrCreateClassroom(className);
-        student.setClassroom(classroom);
-        studentRepository.save(student);
-        return "redirect:/";
-    }
-
-    private Classroom getOrCreateClassroom(String className) {
-        Optional<Classroom> existingClass = classroomRepository.findAll().stream()
-                .filter(c -> c.getClassName().equalsIgnoreCase(className.trim()))
-                .findFirst();
-
-        if (existingClass.isPresent()) {
-            return existingClass.get();
-        } else {
-            Classroom classroom = new Classroom();
-            classroom.setClassName(className.trim());
-            return classroomRepository.save(classroom);
-        }
     }
 }

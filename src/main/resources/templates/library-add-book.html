@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head><title>Add Book</title></head>
+<body>
+    <div layout:fragment="content">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h1>Add New Book ➕</h1>
+            <a href="/library" style="background: #64748b; color: white; padding: 12px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">⬅ Back to Library</a>
+        </div>
+        <div class="form-box" style="max-width: 500px; margin: 0 auto; border-top: 5px solid #3b82f6;">
+            <form action="/addBook" method="post">
+                <label style="font-weight: bold;">Book Title</label>
+                <input type="text" name="title" required>
+                <label style="font-weight: bold; margin-top: 10px; display: block;">Author</label>
+                <input type="text" name="author" required>
+                <label style="font-weight: bold; margin-top: 10px; display: block;">ISBN</label>
+                <input type="text" name="isbn" required>
+                <button type="submit" style="background: #3b82f6; width: 100%; margin-top: 20px; padding: 15px;">Save Book</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

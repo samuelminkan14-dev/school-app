@@ -13,55 +13,51 @@ import java.time.LocalDate;
 @Controller
 public class LibraryController {
 
-    @Autowired
-    private BookRepository bookRepository;
-
-    @Autowired
-    private BookLoanRepository bookLoanRepository;
-
-    @Autowired
-    private StudentRepository studentRepository;
+    @Autowired private BookRepository bookRepo;
+    @Autowired private BookLoanRepository loanRepo;
+    @Autowired private StudentRepository studentRepo;
 
     @GetMapping("/library")
-    public String showLibraryPage(Model model) {
-        model.addAttribute("books", bookRepository.findAll());
-        model.addAttribute("loans", bookLoanRepository.findAll());
-        model.addAttribute("students", studentRepository.findAll());
+    public String showLibrary(Model model) {
+        model.addAttribute("loans", loanRepo.findAll());
+        model.addAttribute("books", bookRepo.findAll());
+        model.addAttribute("students", studentRepo.findAll());
         return "library";
     }
 
+    @GetMapping("/library/add-book")
+    public String showAddBookForm() {
+        return "library-add-book";
+    }
+
     @PostMapping("/addBook")
-    public String addBook(@RequestParam String title, 
-                          @RequestParam String author, 
-                          @RequestParam String isbn) {
+    public String addBook(@RequestParam String title, @RequestParam String author, @RequestParam String isbn) {
         Book book = new Book();
         book.setTitle(title);
         book.setAuthor(author);
         book.setIsbn(isbn);
-        bookRepository.save(book);
+        bookRepo.save(book);
         return "redirect:/library";
     }
 
     @PostMapping("/borrowBook")
-    public String borrowBook(@RequestParam Long bookId, 
-                             @RequestParam Long studentId) {
-        Book book = bookRepository.findById(bookId).orElseThrow();
-        Student student = studentRepository.findById(studentId).orElseThrow();
+    public String borrowBook(@RequestParam Long bookId, @RequestParam Long studentId) {
+        Book book = bookRepo.findById(bookId).orElseThrow();
+        Student student = studentRepo.findById(studentId).orElseThrow();
 
         BookLoan loan = new BookLoan();
         loan.setBook(book);
         loan.setStudent(student);
         loan.setBorrowDate(LocalDate.now());
-        bookLoanRepository.save(loan);
-
+        loanRepo.save(loan);
         return "redirect:/library";
     }
 
     @GetMapping("/returnBook/{id}")
     public String returnBook(@PathVariable Long id) {
-        BookLoan loan = bookLoanRepository.findById(id).orElseThrow();
+        BookLoan loan = loanRepo.findById(id).orElseThrow();
         loan.setReturnDate(LocalDate.now());
-        bookLoanRepository.save(loan);
+        loanRepo.save(loan);
         return "redirect:/library";
     }
 }
