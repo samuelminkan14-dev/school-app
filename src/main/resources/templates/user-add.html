@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head><title>Create User</title></head>
+<body>
+    <div layout:fragment="content">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h1>Create New User 🔐</h1>
+            <a href="/users" style="background: #64748b; color: white; padding: 12px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">⬅ Back to Users</a>
+        </div>
+
+        <div class="form-box" style="max-width: 600px; margin: 0 auto; border-top: 5px solid #17a2b8;">
+            <form action="/addUser" method="post">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div>
+                        <label style="font-weight: bold;">Username</label>
+                        <input type="text" name="username" placeholder="e.g. teacher1" required>
+                    </div>
+                    <div>
+                        <label style="font-weight: bold;">Password</label>
+                        <input type="password" name="password" placeholder="e.g. teacher123" required>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
+                    <div>
+                        <label style="font-weight: bold;">Role</label>
+                        <select name="role" required>
+                            <option value="">-- Select Role --</option>
+                            <option value="ADMIN">ADMIN</option>
+                            <option value="TEACHER">TEACHER</option>
+                            <option value="PARENT">PARENT</option>
+                            <option value="STUDENT">STUDENT</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-weight: bold;">Link to Teacher (Optional)</label>
+                        <select name="linkedId">
+                            <option value="">-- Not a Teacher --</option>
+                            <option th:each="t : ${teachers}" th:value="${t.id}" th:text="${t.firstName + ' ' + t.lastName}"></option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" style="background: #17a2b8; width: 100%; margin-top: 20px; padding: 15px; font-size: 16px;">Create User</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

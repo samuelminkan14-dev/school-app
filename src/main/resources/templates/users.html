@@ -3,71 +3,33 @@
 <head><title>Users</title></head>
 <body>
     <div layout:fragment="content">
-        <h1>User Management 🔐</h1>
-
-        <div class="form-box" style="border-top: 5px solid #17a2b8;">
-            <h3>Create New System User</h3>
-            <form action="/addUser" method="post">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
-                    
-                    <div>
-                        <label style="font-weight: bold;">Username</label>
-                        <input type="text" name="username" placeholder="e.g. teacher1" required style="width: 100%;">
-                    </div>
-                    
-                    <div>
-                        <label style="font-weight: bold;">Password</label>
-                        <input type="password" name="password" placeholder="e.g. teacher123" required style="width: 100%;">
-                    </div>
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
-                    
-                    <div>
-                        <label style="font-weight: bold;">Role</label>
-                        <select name="role" required style="width: 100%;">
-                            <option value="">-- Select Role --</option>
-                            <option value="ADMIN">ADMIN</option>
-                            <option value="TEACHER">TEACHER</option>
-                            <option value="PARENT">PARENT</option>
-                            <option value="STUDENT">STUDENT</option>
-                        </select>
-                    </div>
-                    
-                    <!-- THIS IS THE LINK TO TEACHER DROPDOWN (Always Visible) -->
-                    <div>
-                        <label style="font-weight: bold;">Link to Teacher (Only for Teachers)</label>
-                        <select name="linkedId" style="width: 100%;">
-                            <option value="">-- Not a Teacher --</option>
-                            <option th:each="t : ${teachers}" th:value="${t.id}" th:text="${t.firstName + ' ' + t.lastName}"></option>
-                        </select>
-                    </div>
-                </div>
-
-                <button type="submit" style="background: #17a2b8; width: 100%; padding: 12px; font-size: 16px;">Create User</button>
-            </form>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h1>User Management 🔐</h1>
+            <a href="/users/add" style="background: #17a2b8; color: white; padding: 12px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">➕ Create New User</a>
         </div>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Username</th>
-                    <th>Role</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="u : ${users}">
-                    <td th:text="${u.id}">1</td>
-                    <td th:text="${u.username}">admin</td>
-                    <td><span style="background: #e9ecef; padding: 5px 10px; border-radius: 20px; font-weight: bold;" th:text="${u.role}">ADMIN</span></td>
-                    <td>
-                        <a th:href="@{/deleteUser/{id}(id=${u.id})}" class="action-link delete" onclick="return confirm('Delete this user?');">Delete</a>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Role</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="u : ${users}">
+                        <td th:text="${u.id}">1</td>
+                        <td th:text="${u.username}">admin</td>
+                        <td><span style="background: #e9ecef; padding: 5px 10px; border-radius: 20px; font-weight: bold;" th:text="${u.role}">ADMIN</span></td>
+                        <td>
+                            <a th:href="@{/deleteUser/{id}(id=${u.id})}" class="action-link delete" onclick="return confirm('Delete this user?');">Delete</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </body>
 </html>
