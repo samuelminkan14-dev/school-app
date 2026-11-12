@@ -6,33 +6,33 @@
     <title>Parent Portal</title>
     <style>
         :root { --bg-dark: #0f172a; --bg-darker: #020617; --accent: #3b82f6; --text-light: #94a3b8; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #f1f5f9; display: flex; height: 100vh; overflow: hidden; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #f1f5f9; display: flex; height: 100vh; overflow: hidden; font-size: 13px; }
         
-        .hamburger { position: fixed; top: 15px; left: 15px; font-size: 24px; cursor: pointer; background: var(--bg-dark); color: white; padding: 8px 12px; border-radius: 8px; z-index: 2000; border: none; }
-        .top-logout { position: fixed; top: 15px; right: 20px; background: #ef4444; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: bold; z-index: 2000; }
+        .hamburger { position: fixed; top: 15px; left: 15px; font-size: 20px; cursor: pointer; background: var(--bg-dark); color: white; padding: 6px 10px; border-radius: 6px; z-index: 2000; border: none; }
+        .top-logout { position: fixed; top: 15px; right: 20px; background: #ef4444; color: white; padding: 8px 15px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 12px; z-index: 2000; }
 
-        .sidebar { width: 260px; background-color: var(--bg-dark); color: white; height: 100vh; position: fixed; left: 0; top: 0; transition: 0.3s; z-index: 1000; padding-top: 60px; display: flex; flex-direction: column; }
-        .sidebar.closed { left: -260px; }
-        .sidebar h2 { text-align: center; padding: 10px 0 20px 0; margin: 0; border-bottom: 1px solid var(--bg-darker); font-size: 18px; }
+        .sidebar { width: 250px; background-color: var(--bg-dark); color: white; height: 100vh; position: fixed; left: 0; top: 0; transition: 0.3s; z-index: 1000; padding-top: 60px; display: flex; flex-direction: column; }
+        .sidebar.closed { left: -250px; }
+        .sidebar h2 { text-align: center; padding: 10px 0 15px 0; margin: 0; border-bottom: 1px solid var(--bg-darker); font-size: 15px; }
         
         .sidebar-links { flex: 1; overflow-y: auto; padding-bottom: 80px; }
         .sidebar-links::-webkit-scrollbar { width: 6px; }
         .sidebar-links::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
 
-        .sidebar a { display: block; color: var(--text-light); padding: 15px 20px; text-decoration: none; font-size: 15px; border-left: 3px solid transparent; transition: 0.2s; }
+        .sidebar a { display: block; color: var(--text-light); padding: 10px 15px; text-decoration: none; font-size: 12px; border-left: 3px solid transparent; transition: 0.2s; }
         .sidebar a:hover, .sidebar a.active { background-color: var(--bg-darker); color: white; border-left-color: var(--accent); }
 
-        .main-content { margin-left: 260px; width: calc(100% - 260px); padding: 80px 30px 80px 30px; transition: 0.3s; height: 100vh; overflow-y: auto; }
+        .main-content { margin-left: 250px; width: calc(100% - 250px); padding: 70px 20px 80px 20px; transition: 0.3s; height: 100vh; overflow-y: auto; }
         .main-content.full-width { margin-left: 0; width: 100%; }
 
         .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 20px; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { border-bottom: 1px solid #e2e8f0; padding: 12px; text-align: left; }
-        th { background: #f8fafc; font-size: 13px; color: #64748b; text-transform: uppercase; }
-        .card { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        th, td { border-bottom: 1px solid #e2e8f0; padding: 10px; text-align: left; font-size: 12px; }
+        th { background: #f8fafc; font-size: 10px; color: #64748b; text-transform: uppercase; }
+        .card { background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 20px; }
         
         @media (max-width: 768px) {
-            .sidebar { left: -260px; }
+            .sidebar { left: -250px; }
             .sidebar.mobile-open { left: 0; }
             .main-content { margin-left: 0; width: 100%; padding-bottom: 80px; }
         }
